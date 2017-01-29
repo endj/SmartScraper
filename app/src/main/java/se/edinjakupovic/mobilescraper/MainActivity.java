@@ -1,5 +1,5 @@
 package se.edinjakupovic.mobilescraper;
-
+//what up edin
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
