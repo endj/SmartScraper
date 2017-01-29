@@ -20,18 +20,20 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="84dp"
         android:background="@drawable/bordercolor"
-        android:id="@+id/editText"
+        android:id="@+id/input"
         android:padding="11dp" />
 
     <Button
         android:text="@string/searchBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/editText"
+        android:layout_below="@+id/input"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="41dp"
         android:textAllCaps="false"
         android:background="@drawable/bordercolor"
-        android:id="@+id/button" />
+        android:id="@+id/searchBtn"
+        android:onClick="doSearch"
+        />
 
 </RelativeLayout>
