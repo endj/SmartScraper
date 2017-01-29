@@ -23,5 +23,5 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra(MESSAGE,intext);  // Adds
         startActivity(intent);
     }
-    
+    //
 }
