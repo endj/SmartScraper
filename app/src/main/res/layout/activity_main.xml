@@ -10,8 +10,28 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="se.edinjakupovic.mobilescraper.MainActivity">
 
-    <TextView
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:hint="@string/inputEdit"
+        android:ems="10"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="84dp"
+        android:background="@drawable/bordercolor"
+        android:id="@+id/editText"
+        android:padding="11dp" />
+
+    <Button
+        android:text="@string/searchBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:layout_below="@+id/editText"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="41dp"
+        android:textAllCaps="false"
+        android:background="@drawable/bordercolor"
+        android:id="@+id/button" />
+
 </RelativeLayout>
