@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
                 String searchTerm = strings[0];
                 Document doc = Jsoup.connect("https://www.google.se/search?q="+searchTerm).get();
                 String title = doc.title();
-                buffer.append(title);
+                buffer.append(title); //
 
             }catch (Throwable e){
                 e.printStackTrace();
