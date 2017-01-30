@@ -27,13 +27,21 @@
         android:text="@string/searchBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@drawable/bordercolor"
+        android:textAllCaps="false"
+        android:id="@+id/htmlBtn"
         android:layout_below="@+id/input"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="41dp"
-        android:textAllCaps="false"
-        android:background="@drawable/bordercolor"
-        android:id="@+id/searchBtn"
-        android:onClick="doSearch"
-        />
+        android:layout_marginTop="66dp" />
+
+    <TextView
+        android:text="@string/searchBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/htmlBtn"
+        android:layout_alignRight="@+id/htmlBtn"
+        android:layout_alignEnd="@+id/htmlBtn"
+        android:layout_marginTop="100dp"
+        android:id="@+id/resultext" />
 
 </RelativeLayout>
