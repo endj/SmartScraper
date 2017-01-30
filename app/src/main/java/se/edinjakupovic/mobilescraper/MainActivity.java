@@ -14,8 +14,12 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
     public static final String MESSAGE = "N";
+    public static final int MAXLINKS = 5;
     //private String testpage = "http://edinjakupovic.se/";
    // private Document htmlDocument;
     TextView resultext;
@@ -51,13 +55,27 @@ public class MainActivity extends AppCompatActivity {
                 String searchTerm = strings[0];
                 Document doc = Jsoup.connect("https://www.google.se/search?q="+searchTerm).get();
                 Elements searchLinks = doc.select("h3.r > a");
-                for(Element e : searchLinks){
-                    if(!e.text().isEmpty() && !e.attr("href").isEmpty()){
-                        buffer.append(e.text());
-                        buffer.append("\n");
-                        buffer.append(e.attr("href"));
-                        buffer.append("##");
+
+
+                for(Element e : searchLinks){   // For each of googles search results
+
+                    Document temp = Jsoup.connect(e.attr("href")).get(); // Get the current page
+                    Elements para = temp.select("div > p");  // Fetch all links
+                    Elements listItems = temp.select("div > ul");
+
+                    buffer.append("TEXT ============================");
+                    for(Element p : para){
+                        if(p.text().length() > 20){
+                            buffer.append("-\n-"+p.text()+"-\n-");
+                        }
                     }
+                    buffer.append("=======================================");
+/*
+                    for(Element li : listItems){
+                        buffer.append(li.text());
+                    }*/
+                        buffer.append(e.text()+"\n"+e.attr("href")+"¤¤");
+
                 }
 
             }catch (Throwable e){

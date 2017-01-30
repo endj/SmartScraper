@@ -28,7 +28,7 @@ public class ResultPage extends AppCompatActivity {
         Intent intent = getIntent();
         String message = intent.getStringExtra(MainActivity.MESSAGE);
 
-        return message.split("\\#+");
+        return message.split("\\¤¤+");
 
     }
 }
