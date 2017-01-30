@@ -3,13 +3,17 @@ package se.edinjakupovic.mobilescraper;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 public class MainActivity extends AppCompatActivity {
     public static final String MESSAGE = "N";
@@ -47,8 +51,14 @@ public class MainActivity extends AppCompatActivity {
             try{
                 String searchTerm = strings[0];
                 Document doc = Jsoup.connect("https://www.google.se/search?q="+searchTerm).get();
-                String title = doc.title();
-                buffer.append(title); //
+                Elements searchLinks = doc.select("h3.r > a");
+                for(Element e : searchLinks){
+                    buffer.append(e.text());
+                    buffer.append("\n");
+                    buffer.append(e.attr("href"));
+                    buffer.append("\n");
+
+                }
 
             }catch (Throwable e){
                 e.printStackTrace();

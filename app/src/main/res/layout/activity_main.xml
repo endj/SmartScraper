@@ -16,12 +16,24 @@
         android:inputType="textPersonName"
         android:hint="@string/inputEdit"
         android:ems="10"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="84dp"
+        android:layout_marginTop="12dp"
         android:background="@drawable/bordercolor"
         android:id="@+id/input"
-        android:padding="11dp" />
+        android:padding="11dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:text="@string/searchBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="21dp"
+        android:id="@+id/resultext"
+        android:textAlignment="center"
+        android:layout_below="@+id/htmlBtn"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
     <Button
         android:text="@string/searchBtn"
@@ -32,16 +44,6 @@
         android:id="@+id/htmlBtn"
         android:layout_below="@+id/input"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="66dp" />
-
-    <TextView
-        android:text="@string/searchBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/htmlBtn"
-        android:layout_alignRight="@+id/htmlBtn"
-        android:layout_alignEnd="@+id/htmlBtn"
-        android:layout_marginTop="100dp"
-        android:id="@+id/resultext" />
+        android:layout_marginTop="18dp" />
 
 </RelativeLayout>
