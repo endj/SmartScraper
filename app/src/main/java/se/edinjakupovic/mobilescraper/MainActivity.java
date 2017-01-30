@@ -8,12 +8,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 public class MainActivity extends AppCompatActivity {
     public static final String MESSAGE = "N";
     //private String testpage = "http://edinjakupovic.se/";
    // private Document htmlDocument;
+    TextView resultext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
         final EditText input = (EditText) findViewById(R.id.input); // Fiends the search bar
         Button htmlSearch = (Button) findViewById(R.id.htmlBtn); // Search btn
-        TextView resultext = (TextView) findViewById(R.id.resultext);
+        resultext = (TextView) findViewById(R.id.resultext);
 
         htmlSearch.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -37,22 +39,25 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
-
     private class ParseUrl extends AsyncTask<String, Void, String> {
 
         @Override
         protected String doInBackground(String... strings){
-            return "test";
+            StringBuffer buffer = new StringBuffer();
+            try{
 
+                Document doc = Jsoup.connect("http://www.edinjakupovic.se/").get();
+                String title = doc.title();
+                buffer.append(title);
+
+            }catch (Throwable e){
+                e.printStackTrace();
+            }
+            return buffer.toString();
         }
         @Override
-        protected void onPreExecute(){
-
-        }
-        @Override
-        protected void onPostExecute(String s){
-
+        protected void onPostExecute(String result){
+            resultext.setText(result);
         }
     }
 
