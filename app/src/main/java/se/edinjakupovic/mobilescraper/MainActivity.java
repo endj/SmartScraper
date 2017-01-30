@@ -39,12 +39,8 @@ public class MainActivity extends AppCompatActivity {
                 String siteUrl = input.getText().toString();
                 new ParseUrl().execute(siteUrl);
             }
-
         });
     }
-
-
-
 
     private class ParseUrl extends AsyncTask<String, Void, String> {
 
@@ -56,28 +52,18 @@ public class MainActivity extends AppCompatActivity {
                 Document doc = Jsoup.connect("https://www.google.se/search?q="+searchTerm).get();
                 Elements searchLinks = doc.select("h3.r > a");
 
-
                 for(Element e : searchLinks){   // For each of googles search results
-
                     Document temp = Jsoup.connect(e.attr("href")).get(); // Get the current page
                     Elements para = temp.select("div > p");  // Fetch all links
-                    Elements listItems = temp.select("div > ul");
+                    //Elements listItems = temp.select("div > ul");
 
-                    buffer.append("TEXT ============================");
                     for(Element p : para){
                         if(p.text().length() > 20){
                             buffer.append("-\n-"+p.text()+"-\n-");
                         }
                     }
-                    buffer.append("=======================================");
-/*
-                    for(Element li : listItems){
-                        buffer.append(li.text());
-                    }*/
-                        buffer.append(e.text()+"\n"+e.attr("href")+"¤¤");
-
+                    buffer.append(e.text()+"\n"+e.attr("href")+"¤¤");
                 }
-
             }catch (Throwable e){
                 e.printStackTrace();
             }
