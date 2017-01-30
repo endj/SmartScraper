@@ -52,10 +52,12 @@ public class MainActivity extends AppCompatActivity {
                 Document doc = Jsoup.connect("https://www.google.se/search?q="+searchTerm).get();
                 Elements searchLinks = doc.select("h3.r > a");
                 for(Element e : searchLinks){
-                    buffer.append(e.text());
-                    buffer.append("\n");
-                    buffer.append(e.attr("href"));
-                    buffer.append("%%");
+                    if(!e.text().isEmpty() && !e.attr("href").isEmpty()){
+                        buffer.append(e.text());
+                        buffer.append("\n");
+                        buffer.append(e.attr("href"));
+                        buffer.append("##");
+                    }
                 }
 
             }catch (Throwable e){
