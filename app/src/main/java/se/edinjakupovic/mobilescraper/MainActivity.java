@@ -1,6 +1,5 @@
 package se.edinjakupovic.mobilescraper;
 //testing git
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,8 +12,8 @@ import org.jsoup.nodes.Document;
 
 public class MainActivity extends AppCompatActivity {
     public static final String MESSAGE = "N";
-    private String testpage = "http://edinjakupovic.se/";
-    private Document htmlDocument;
+    //private String testpage = "http://edinjakupovic.se/";
+   // private Document htmlDocument;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,8 +28,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v){
                 String siteUrl = input.getText().toString();
-              //  new ParseURL().execute(siteUrl);
+                new ParseUrl().execute(siteUrl);
             }
+
         });
     }
 
@@ -40,10 +40,11 @@ public class MainActivity extends AppCompatActivity {
 
 
     private class ParseUrl extends AsyncTask<String, Void, String> {
+
         @Override
         protected String doInBackground(String... strings){
-            String x = "test";
-            return x;
+            return "test";
+
         }
         @Override
         protected void onPreExecute(){
