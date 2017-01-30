@@ -45,8 +45,8 @@ public class MainActivity extends AppCompatActivity {
         protected String doInBackground(String... strings){
             StringBuffer buffer = new StringBuffer();
             try{
-
-                Document doc = Jsoup.connect("http://www.edinjakupovic.se/").get();
+                String searchTerm = strings[0];
+                Document doc = Jsoup.connect("https://www.google.se/search?q="+searchTerm).get();
                 String title = doc.title();
                 buffer.append(title);
 
@@ -60,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
             resultext.setText(result);
         }
     }
-
+    public void doX(String x){
+        resultext.setText(x);
+    }
 
 }
