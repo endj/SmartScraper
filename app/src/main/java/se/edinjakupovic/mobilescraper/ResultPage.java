@@ -32,6 +32,9 @@ public class ResultPage extends AppCompatActivity {
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
+
+
+
             @Override
             public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
                 Toast.makeText(getApplicationContext(),
@@ -43,7 +46,7 @@ public class ResultPage extends AppCompatActivity {
                 if(lines == 1000){
                     t.setMaxLines(5);
                 }else{
-                    t.setBackgroundColor(0xFF00FF00);
+                    //t.setBackgroundColor(0xFF00FF00);
                     t.setMaxLines(1000);
                 }
             }
