@@ -25,7 +25,7 @@ public class ResultPage extends AppCompatActivity {
         setContentView(R.layout.activity_result_page);
 
         final String[] Result = fetchResult(); // Our data
-        listView = (ListView) findViewById(R.id.ListView); // Our listview object
+        listView = (ListView) findViewById(R.id.linkListView); // Our listview object
 
         ArrayAdapter adapter = new ArrayAdapter(this, R.layout.listview_item, Result);
         listView.setAdapter(adapter);
@@ -33,12 +33,13 @@ public class ResultPage extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
 
+
+
             @Override
             public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
                 Toast.makeText(getApplicationContext(),
                         "Click ListItem Number " + position, Toast.LENGTH_LONG)
                         .show();
-
                 TextView t = (TextView) view;
 
                 int lines = t.getMaxLines();
