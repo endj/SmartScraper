@@ -2,6 +2,8 @@ package se.edinjakupovic.mobilescraper;
 //testing git
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -14,15 +16,20 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.util.ArrayList;
-import java.util.List;
+
 
 public class MainActivity extends AppCompatActivity {
     public static final String MESSAGE = "N";
-    public static final int MAXLINKS = 5;
-    //private String testpage = "http://edinjakupovic.se/";
-   // private Document htmlDocument;
     TextView resultext;
+
+    Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg){
+            //
+        }
+    };
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,23 +53,14 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected String doInBackground(String... strings){
-            StringBuffer buffer = new StringBuffer();
+            StringBuilder buffer = new StringBuilder();
             try{
                 String searchTerm = strings[0];
                 Document doc = Jsoup.connect("https://www.google.se/search?q="+searchTerm).get();
                 Elements searchLinks = doc.select("h3.r > a");
 
                 for(Element e : searchLinks){   // For each of googles search results
-                    Document temp = Jsoup.connect(e.attr("href")).get(); // Get the current page
-                    Elements para = temp.select("div > p");  // Fetch all links
-                    //Elements listItems = temp.select("div > ul");
-
-                    for(Element p : para){
-                        if(p.text().length() > 20){
-                            buffer.append("-\n-"+p.text()+"-\n-");
-                        }
-                    }
-                    buffer.append(e.text()+"\n"+e.attr("href")+"¤¤");
+                    buffer.append(e.attr("href")+"¤¤");
                 }
             }catch (Throwable e){
                 e.printStackTrace();
@@ -71,13 +69,41 @@ public class MainActivity extends AppCompatActivity {
         }
         @Override
         protected void onPostExecute(String result){
-            doSearch(result);
+            threadSearch(result);
         }
+    }
+
+    public void threadSearch(String result){
+        String[] text = result.split("\\¤¤+");
+        Thread[] threads = new Thread[text.length];
+
+        for(int i=0;i<threads.length;i++){
+            threads[i] = new Thread(new UrlRun(text[i]));
+            threads[i].start();
+        }
+
     }
     public void doSearch(String result){
         Intent intent = new Intent(this, ResultPage.class);  // An intent is used to do something
         intent.putExtra(MESSAGE,result);  // Adds
         startActivity(intent);
     }
+
+
+    public class UrlRun implements Runnable { //constructor, svartmagi för att passa data till runnablen
+        private String link;
+        public UrlRun(String _link) {
+            this.link = _link;
+        }
+
+        @Override
+        public void run() {
+           resultext.setText(link);
+        }
+    }
+
+
+
+
 
 }
