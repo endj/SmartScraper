@@ -1,5 +1,3 @@
 TODO LIST:
 
-
-Figure out how to multithread jsoup
-Connect to database
+Post to php where searchterm and websites are inserted.
