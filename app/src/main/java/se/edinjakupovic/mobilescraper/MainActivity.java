@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -25,6 +26,11 @@ public class MainActivity extends AppCompatActivity {
     Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg){
+            Bundle bundle = msg.getData();
+            String string = bundle.getString("test");
+
+            resultext.append("\n"+string);
+            Log.d("myTag", "Handler ran "+string);
             //
         }
     };
@@ -69,8 +75,9 @@ public class MainActivity extends AppCompatActivity {
         }
         @Override
         protected void onPostExecute(String result){
+            Log.d("myTag", "ThreadSearch called");
             threadSearch(result);
-        }
+    }
     }
 
     public void threadSearch(String result){
@@ -80,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
         for(int i=0;i<threads.length;i++){
             threads[i] = new Thread(new UrlRun(text[i]));
             threads[i].start();
+            Log.d(i+"", "Thread created"+i);
         }
 
     }
@@ -97,9 +105,30 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public void run() {
-           resultext.setText(link);
-        }
+        public void run() { // Webscrapa länken
+            StringBuilder text = new StringBuilder(); // använder vi för appenda text
+            try{
+                Document doc = Jsoup.connect(this.link).get();
+                Elements ps = doc.select("p");
+
+                for(Element e : ps){
+                    text.append(e.text());
+                }
+            }catch (Throwable e){
+                e.printStackTrace();
+            }
+
+
+
+
+            Log.d("abc", "URL RUNNABLE RUNNING" + this.link);
+            Message msg = handler.obtainMessage();
+            Bundle bundle = new Bundle();
+            bundle.putString("test",this.link+ text.toString());
+            msg.setData(bundle);
+            handler.sendMessage(msg);
+           //resultext.setText(link);
+        }     // call handler to update ui
     }
 
 
