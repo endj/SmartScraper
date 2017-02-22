@@ -28,6 +28,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -66,10 +67,8 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private class ParseUrl extends AsyncTask<String, Void, String> {
+    private class ParseUrl extends AsyncTask<String, Void, ArrayList<String>> {
         ProgressDialog pdLoading = new ProgressDialog(MainActivity.this);
-        StringBuilder buffer = new StringBuilder();
-
 
         @Override
         protected void onPreExecute() {
@@ -82,10 +81,13 @@ public class MainActivity extends AppCompatActivity {
 
 
         @Override
-        protected String doInBackground(String... strings){
+        protected ArrayList<String> doInBackground(String... strings){
             HttpURLConnection con;
             URL url;
             String searchTerm = strings[0];
+            ArrayList<String> links = new ArrayList<>();
+            ArrayList<String> error = new ArrayList<>();
+
 
             try{
                 Document doc = Jsoup.connect("https://www.google.se/search?q="+searchTerm).get();
@@ -93,12 +95,13 @@ public class MainActivity extends AppCompatActivity {
                 //Stoppa in söktermen och hittade domäner i databasen
 
                 for(Element e : searchLinks){   // For each of googles search results
-                    buffer.append(e.attr("href")+"¤¤");
+                    links.add(e.attr("href"));
                 }
             }catch (Throwable e){
                 e.printStackTrace();
             }
 
+            Log.d("abc",links.toString());
 
             final String target = "http://192.168.0.3/kandidat/script.php?search=";
             try{
@@ -123,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
 
             }catch (Exception e){
                 e.printStackTrace();
-                return "error";
+                return error;
             }
             try{
                 int response_code = con.getResponseCode();
@@ -136,38 +139,23 @@ public class MainActivity extends AppCompatActivity {
                     StringBuilder result = new StringBuilder();
                     String line;
 
+                    /*
                     while((line = reader.readLine())!=null){
                         result.append(line);
-                    }
-                    return(result.toString());
+                    }*/
+                    return links;
+                    //return(result.toString());
                 }else{
-                    return("failed responce code not ok");
+                    error.add("failed responce code not ok");
+                    return error;
                 }
             }catch(IOException e2){
                 e2.printStackTrace();
-                return "exception";
+                error.add("exception");
+                return error;
             } finally {
                 con.disconnect();
             }
-
-
-
-
-            /*
-            StringBuilder buffer = new StringBuilder();
-            try{
-                String searchTerm = strings[0];
-                Document doc = Jsoup.connect("https://www.google.se/search?q="+searchTerm).get();
-                Elements searchLinks = doc.select("h3.r > a");
-                //Stoppa in söktermen och hittade domäner i databasen
-
-                for(Element e : searchLinks){   // For each of googles search results
-                    buffer.append(e.attr("href")+"¤¤");
-                }
-            }catch (Throwable e){
-                e.printStackTrace();
-            }
-            return buffer.toString();*/
         }
 
 
@@ -177,24 +165,23 @@ public class MainActivity extends AppCompatActivity {
 
 
         @Override
-        protected void onPostExecute(String result){
+        protected void onPostExecute(ArrayList result){
             pdLoading.dismiss();
 
-            if(result.equalsIgnoreCase("error")){
+            if(result.toString().equalsIgnoreCase("error")){
                 doSearch("Error at connection");
             }else{
-                doSearch(result);
+                //doSearch(result);
                 //threadSearch(result);
             }
         }
     }
 
-    public void threadSearch(String result){
-        String[] text = result.split("¤¤+");
-        Thread[] threads = new Thread[text.length];
+    public void threadSearch(ArrayList result){
+        Thread[] threads = new Thread[result.size()];
 
         for(int i=0;i<threads.length;i++){
-            threads[i] = new Thread(new UrlRun(text[i]));
+            threads[i] = new Thread(new UrlRun(result.get(i).toString()));
             threads[i].start();
             Log.d(i+"", "Thread created"+i);
         }
@@ -209,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
 
     public class UrlRun implements Runnable { //constructor, svartmagi för att passa data till runnablen
         private String link;
-        public UrlRun(String _link) {
+        UrlRun(String _link) {
             this.link = _link;
         }
 
