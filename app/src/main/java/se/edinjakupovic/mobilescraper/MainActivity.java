@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
             try{
                 Document doc = Jsoup.connect("https://www.google.se/search?q="+searchTerm).get();
                 Elements searchLinks = doc.select("h3.r > a");
-                //Stoppa in söktermen och hittade domäner i databasen
+                //Find popular results
 
                 for(Element e : searchLinks){   // For each of googles search results
                     links.add(e.attr("href"));
@@ -139,10 +139,11 @@ public class MainActivity extends AppCompatActivity {
                     StringBuilder result = new StringBuilder();
                     String line;
 
-                    /*
+
                     while((line = reader.readLine())!=null){
                         result.append(line);
-                    }*/
+                    }
+                    links.add(result.toString());
                     return links;
                     //return(result.toString());
                 }else{
@@ -172,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
                 doSearch("Error at connection");
             }else{
                 //doSearch(result);
-                //threadSearch(result);
+                threadSearch(result);
             }
         }
     }
