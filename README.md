@@ -1,5 +1,5 @@
 TODO LIST:
 
+Post to php where searchterm and websites are inserted.
 
-Figure out how to multithread jsoup
-Connect to database
+Get device information and limit ammount of threads. Faster? // ITS NOT WORTH IT/Faster
