@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v){
                 String siteUrl = input.getText().toString();
+                resultext.setText("");
                 new ParseUrl().execute(siteUrl);
             }
         });
@@ -103,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
 
             Log.d("abc",links.toString());
 
-            final String target = "http://192.168.0.3/kandidat/script.php?search=";
+            final String target = "http://192.168.1.74/kandidat/script.php?search=";
             try{
                 url = new URL(target); // Target php file
                 con =(HttpURLConnection) url.openConnection(); // Opens connection
