@@ -104,6 +104,8 @@ public class MainActivity extends AppCompatActivity {
 
             Log.d("abc",links.toString());
 
+            // 192.168.1.74 jonas
+            // 192.168.0.3 edin
             final String target = "http://192.168.0.3/kandidat/script.php?search=";
             try{
                 url = new URL(target); // Target php file
