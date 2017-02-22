@@ -1,6 +1,8 @@
 package se.edinjakupovic.mobilescraper;
 //testing git
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
@@ -17,13 +19,22 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 
 public class MainActivity extends AppCompatActivity {
     public static final String MESSAGE = "N";
     TextView resultext;
 
-    Handler handler = new Handler(){
+    Handler handler = new Handler(){ //Används bara om man behöver ändra uit
         @Override
         public void handleMessage(Message msg){
             Bundle bundle = msg.getData();
@@ -56,14 +67,30 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private class ParseUrl extends AsyncTask<String, Void, String> {
+        ProgressDialog pdLoading = new ProgressDialog(MainActivity.this);
+        StringBuilder buffer = new StringBuilder();
+
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            //this method will be running on UI thread
+            pdLoading.setMessage("\tSearching...");
+            pdLoading.setCancelable(false);
+            pdLoading.show();
+        }
+
 
         @Override
         protected String doInBackground(String... strings){
-            StringBuilder buffer = new StringBuilder();
+            HttpURLConnection con;
+            URL url;
+            String searchTerm = strings[0];
+
             try{
-                String searchTerm = strings[0];
                 Document doc = Jsoup.connect("https://www.google.se/search?q="+searchTerm).get();
                 Elements searchLinks = doc.select("h3.r > a");
+                //Stoppa in söktermen och hittade domäner i databasen
 
                 for(Element e : searchLinks){   // For each of googles search results
                     buffer.append(e.attr("href")+"¤¤");
@@ -71,17 +98,99 @@ public class MainActivity extends AppCompatActivity {
             }catch (Throwable e){
                 e.printStackTrace();
             }
-            return buffer.toString();
+
+
+            final String target = "http://192.168.0.3/kandidat/script.php?search=";
+            try{
+                url = new URL(target); // Target php file
+                con =(HttpURLConnection) url.openConnection(); // Opens connection
+                // con.setReadTimeout(READ_TIMEOUT);
+                //con.setConnectTimeout(CONNECTION_TIMEOUT);
+                con.setDoOutput(true);
+                con.setDoInput(true);
+
+                Uri.Builder builder = new Uri.Builder().appendQueryParameter("search",searchTerm); // set parameter
+                String query = builder.build().getEncodedQuery();
+
+
+                DataOutputStream wr = new DataOutputStream(con.getOutputStream()); // Connection for sending data
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(wr, "UTF-8"));
+                writer.write(query);
+                writer.flush();
+                writer.close();
+                wr.close();
+                con.connect();
+
+            }catch (Exception e){
+                e.printStackTrace();
+                return "error";
+            }
+            try{
+                int response_code = con.getResponseCode();
+                if(response_code == HttpURLConnection.HTTP_OK){ // Check if connection is made
+
+
+                    // Read data from server
+                    InputStream input = con.getInputStream();
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+                    StringBuilder result = new StringBuilder();
+                    String line;
+
+                    while((line = reader.readLine())!=null){
+                        result.append(line);
+                    }
+                    return(result.toString());
+                }else{
+                    return("failed responce code not ok");
+                }
+            }catch(IOException e2){
+                e2.printStackTrace();
+                return "exception";
+            } finally {
+                con.disconnect();
+            }
+
+
+
+
+            /*
+            StringBuilder buffer = new StringBuilder();
+            try{
+                String searchTerm = strings[0];
+                Document doc = Jsoup.connect("https://www.google.se/search?q="+searchTerm).get();
+                Elements searchLinks = doc.select("h3.r > a");
+                //Stoppa in söktermen och hittade domäner i databasen
+
+                for(Element e : searchLinks){   // For each of googles search results
+                    buffer.append(e.attr("href")+"¤¤");
+                }
+            }catch (Throwable e){
+                e.printStackTrace();
+            }
+            return buffer.toString();*/
         }
+
+
+
+
+
+
+
         @Override
         protected void onPostExecute(String result){
-            Log.d("myTag", "ThreadSearch called");
-            threadSearch(result);
-    }
+            pdLoading.dismiss();
+
+            if(result.equalsIgnoreCase("error")){
+                doSearch("Error at connection");
+            }else{
+                doSearch(result);
+                //threadSearch(result);
+            }
+        }
     }
 
     public void threadSearch(String result){
-        String[] text = result.split("\\¤¤+");
+        String[] text = result.split("¤¤+");
         Thread[] threads = new Thread[text.length];
 
         for(int i=0;i<threads.length;i++){
@@ -119,13 +228,12 @@ public class MainActivity extends AppCompatActivity {
             }
 
 
-
-
             Log.d("abc", "URL RUNNABLE RUNNING" + this.link);
             Message msg = handler.obtainMessage();
             Bundle bundle = new Bundle();
             bundle.putString("test",this.link+ text.toString());
             msg.setData(bundle);
+            //doSearch("xd");
             handler.sendMessage(msg);
            //resultext.setText(link);
         }     // call handler to update ui
