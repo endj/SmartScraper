@@ -1,5 +1,5 @@
 package se.edinjakupovic.mobilescraper;
-//testing git
+
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
 
             Log.d("abc",links.toString());
 
-            final String target = "http://192.168.1.74/kandidat/script.php?search=";
+            final String target = "http://192.168.0.3/kandidat/script.php?search=";
             try{
                 url = new URL(target); // Target php file
                 con =(HttpURLConnection) url.openConnection(); // Opens connection
@@ -222,9 +222,7 @@ public class MainActivity extends AppCompatActivity {
             Bundle bundle = new Bundle();
             bundle.putString("test",this.link+ text.toString());
             msg.setData(bundle);
-            //doSearch("xd");
             handler.sendMessage(msg);
-           //resultext.setText(link);
         }     // call handler to update ui
     }
 
