@@ -29,6 +29,8 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -86,21 +88,25 @@ public class MainActivity extends AppCompatActivity {
             HttpURLConnection con;
             URL url;
             String searchTerm = strings[0];
-            ArrayList<String> links = new ArrayList<>();
+            ArrayList<String> links = new ArrayList<>(); // Urls
             ArrayList<String> error = new ArrayList<>();
 
 
             try{
                 Document doc = Jsoup.connect("https://www.google.se/search?q="+searchTerm).get();
                 Elements searchLinks = doc.select("h3.r > a");
+                ArrayList<String> domains = new ArrayList<>();
+
                 //Find popular results
 
                 for(Element e : searchLinks){   // For each of googles search results
                     links.add(e.attr("href"));
                 }
+                domains = getDomain(links);
             }catch (Throwable e){
                 e.printStackTrace();
             }
+
 
             Log.d("abc",links.toString());
 
@@ -115,7 +121,13 @@ public class MainActivity extends AppCompatActivity {
                 con.setDoOutput(true);
                 con.setDoInput(true);
 
-                Uri.Builder builder = new Uri.Builder().appendQueryParameter("search",searchTerm); // set parameter
+
+                String numOfLinks = Integer.toString(links.size());
+                Uri.Builder builder = new Uri.Builder().appendQueryParameter("search",searchTerm);// set parameter
+                builder.appendQueryParameter("urls",numOfLinks); // pases the number of links
+                for(int i=0; i< links.size();i++){
+                    builder.appendQueryParameter(""+i, links.get(i));
+                }
                 String query = builder.build().getEncodedQuery();
 
 
@@ -189,8 +201,20 @@ public class MainActivity extends AppCompatActivity {
             threads[i].start();
             Log.d(i+"", "Thread created"+i);
         }
-
     }
+
+    public ArrayList<String> getDomain(ArrayList input){
+        ArrayList<String> matches = new ArrayList<>();
+        Pattern pattern = Pattern.compile("([^:^/]*)");
+
+        for(int i=0;i < input.size();i++){
+            Matcher matcher = pattern.matcher(input.get(i).toString());
+            matcher.find();
+            matches.add(matcher.group(1));
+        }
+        return matches;
+    }
+
     public void doSearch(String result){
         Intent intent = new Intent(this, ResultPage.class);  // An intent is used to do something
         intent.putExtra(MESSAGE,result);  // Adds
