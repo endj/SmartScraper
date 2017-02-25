@@ -1,4 +1,18 @@
 <?php
+$host = "localhost";
+$dbname = "kandidat";
+$username = "root";
+$password = '';
 
-$mysqli = new mysqli('localhost','root','','kandidat') or die ('Error connecting to mysql: '. mysqli_error($link));
+
+
+try{
+    $conn = new PDO("mysql:host=$host;dbname=$dbname",$username,$password);
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+}catch(PDOException $e){
+    echo "connection failed: ".$e->getMessage();
+}
+
+
+
 ?>
