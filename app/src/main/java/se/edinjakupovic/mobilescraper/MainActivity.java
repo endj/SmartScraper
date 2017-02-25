@@ -91,18 +91,13 @@ public class MainActivity extends AppCompatActivity {
             ArrayList<String> links = new ArrayList<>(); // Urls
             ArrayList<String> error = new ArrayList<>();
 
-
             try{
                 Document doc = Jsoup.connect("https://www.google.se/search?q="+searchTerm).get();
                 Elements searchLinks = doc.select("h3.r > a");
-                ArrayList<String> domains = new ArrayList<>();
-
-                //Find popular results
 
                 for(Element e : searchLinks){   // For each of googles search results
                     links.add(e.attr("href"));
                 }
-                domains = getDomain(links);
             }catch (Throwable e){
                 e.printStackTrace();
             }
@@ -121,15 +116,17 @@ public class MainActivity extends AppCompatActivity {
                 con.setDoOutput(true);
                 con.setDoInput(true);
 
+                ArrayList<String> domains = new ArrayList<>();
+                domains = getDomain(links);
 
-                String numOfLinks = Integer.toString(links.size());
+
                 Uri.Builder builder = new Uri.Builder().appendQueryParameter("search",searchTerm);// set parameter
-                builder.appendQueryParameter("urls",numOfLinks); // pases the number of links
-                for(int i=0; i< links.size();i++){
-                    builder.appendQueryParameter(""+i, links.get(i));
+                builder.appendQueryParameter("numOfLinks",links.size()+"");
+                for(int i=0;i<links.size();i++){
+                    builder.appendQueryParameter("searchUrl"+i,links.get(i)); // full url
+                    builder.appendQueryParameter("domainUrl"+i,domains.get(i)); // just domains
                 }
                 String query = builder.build().getEncodedQuery();
-
 
                 DataOutputStream wr = new DataOutputStream(con.getOutputStream()); // Connection for sending data
                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(wr, "UTF-8"));
@@ -154,7 +151,6 @@ public class MainActivity extends AppCompatActivity {
                     StringBuilder result = new StringBuilder();
                     String line;
 
-
                     while((line = reader.readLine())!=null){
                         result.append(line);
                     }
@@ -174,16 +170,9 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-
-
-
-
-
-
         @Override
         protected void onPostExecute(ArrayList result){
             pdLoading.dismiss();
-
             if(result.toString().equalsIgnoreCase("error")){
                 doSearch("Error at connection");
             }else{
@@ -205,12 +194,15 @@ public class MainActivity extends AppCompatActivity {
 
     public ArrayList<String> getDomain(ArrayList input){
         ArrayList<String> matches = new ArrayList<>();
-        Pattern pattern = Pattern.compile("([^:^/]*)");
 
         for(int i=0;i < input.size();i++){
-            Matcher matcher = pattern.matcher(input.get(i).toString());
-            matcher.find();
-            matches.add(matcher.group(1));
+            try {
+                URL url = new URL(input.get(i).toString());
+                matches.add(url.getHost());
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
         return matches;
     }
