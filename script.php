@@ -1,23 +1,25 @@
 <?php
-
-
 include 'db.php';
 include 'functions.php';
 
- // ['söktermen','länk1','länk2'..'länkn']
   if(isset($_POST['search'])){ // Http request
+    //echo $_POST['domainUrl0'];
+    $links = $_POST['numOfLinks'];
+    new_search($conn,$links);
 
 
-    $urls = array_slice($_POST,2); // urls
-    new_search($urls);  // insert
+    $x = 0;
+    foreach ($_POST as $key => $value) {
+    //  echo $x;
+      $x++;
+    }
 
+
+    //new_search($conn);
+  //  new_domain($conn);
   }
 
-  // TODO
-  // Stoppa in domän
-  // stoppa in varje unika sökning
-  // Ta fram emst relevant länkar för den sökninge
- // echoa ut dom mest relevanta
+
 
 
 

@@ -1,23 +1,19 @@
 <?php
 include 'db.php';
 
-function new_search($data){
-  global $mysqli;
+function new_search($conn,$links){
+
+  $stmt = $conn->prepare("INSERT INTO searchterm(term,noOfSearches) VALUES (:term, 1)
+                          ON DUPLICATE KEY UPDATE noOfSearches = noOfSearches+1");
+      $stmt->execute([':term' => $_POST['search']]);
+
+  $stmt = $conn->prepare("INSERT INTO domain(url,numOfHits) VALUES (:url,1)
+                          ON DUPLICATE KEY UPDATE numOfHits = numOfHits+1");
+      for($x=0;  $x < $links; $x++){
+          $stmt->execute([':url' => $_POST['domainUrl'.$x]]);
+      }
 
 
-//  $urls = array_slice($data,2); // urls
-//  $searchTerm = $data['search']; // The user search
-  //$numOfLinks = $data['urls']; // Number of urls found
-
-
-//  $term = $mysqli->real_escape_string($search);
-
-//  $sql_searchterm =  ("INSERT INTO searchterm(term,noOfSearches) VALUES ('$term',1) ON DUPLICATE KEY UPDATE noOfSearches = noOfSearches+1");
-  $sql_domain = ("INSERT IGNORE INTO domain(url,numOfHits) VALUES ('$data[2]',2)");
-
-//  $mysqli->query($sql_searchterm);
-  $mysqli->query($sql_domain);
 }
-
 
  ?>
