@@ -1,12 +1,7 @@
 TODO LIST:
 
 
-1) Split links by domainname ->  send to db
-full url  to threads
-Insert into DB search, domain, searcterm
+1) Insert and linkk the searchterm trough foreign keyes
 
-2) fetch most relevant url for the searchterm from the database
-3) append to arraylist and remove ones demed bad   // Here we do the work of filtering shit links
-4) call threads with arraylist // split work into threads
-2) Gather work from threads and sort
+2) Make the handler keep track of items comming in and sort them by relevance
 
