@@ -1,12 +1,14 @@
 TODO LIST:
 
+#DESIGN
 
-1) Split links by domainname ->  send to db
-full url  to threads
-Insert into DB search, domain, searcterm
+Create our own list_item_row / use custom adapter listview
+when clicked expand a scrollable window and show buttons to url/collpase
 
-2) fetch most relevant url for the searchterm from the database
-3) append to arraylist and remove ones demed bad   // Here we do the work of filtering shit links
-4) call threads with arraylist // split work into threads
-2) Gather work from threads and sort
+swipe left to dislike , right to upvote
+
+
+1) Insert and linkk the searchterm trough foreign keyes
+
+2) Make the handler keep track of items comming in and sort them by relevance
 
