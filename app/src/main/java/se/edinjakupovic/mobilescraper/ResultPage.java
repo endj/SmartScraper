@@ -1,6 +1,7 @@
 package se.edinjakupovic.mobilescraper;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
@@ -8,9 +9,8 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-
-//import android.widget.ListView;
 import android.widget.TextView;
+
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -29,9 +29,11 @@ import java.net.URL;
 import java.util.ArrayList;
 
 public class ResultPage extends AppCompatActivity {
-    //private ListView listView;
     private TextView showInput;
-    final String target = "http://192.168.0.3/kandidat/script.php?search=";
+    public static final String MESSAGE = "";
+    final int READ_TIMEOUT =5000;
+    final int CONNECTION_TIMEOUT=5000;
+    final String target = "http://192.168.10.208/kandidat/script.php?search=";
 
 
     @Override
@@ -39,65 +41,41 @@ public class ResultPage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result_page);
 
-        final String Result = fetchResult(); // Our data
-        new ParseUrl().execute(Result);
-        //listView = (ListView) findViewById(R.id.linkListView); // Our listview object
         showInput = (TextView) findViewById(R.id.textView);
+
+        final String Result = fetchResult(); // Our data
         showInput.setText(Result);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        /*
-        ArrayAdapter adapter = new ArrayAdapter(this, R.layout.listview_item, Result);
-        listView.setAdapter(adapter);
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
-                Toast.makeText(getApplicationContext(),
-                        "Click ListItem Number " + position, Toast.LENGTH_LONG)
-                        .show();
-                TextView t = (TextView) view;
-
-                int lines = t.getMaxLines();
-                if(lines == 1000){
-                    t.setMaxLines(5);
-                }else{
-                    //t.setBackgroundColor(0xFF00FF00);
-                    t.setMaxLines(1000);
-                }
-            }
-        }); */
-
-
+        new ParseUrl().execute(Result);
 
 
 
     }
 
+    Handler handler = new Handler(new Handler.Callback() {
+        ArrayList<String> data = new ArrayList<>();
 
 
-    public String fetchResult(){ // Returns a string array with content
+        @Override
+        public boolean handleMessage(Message msg){
+            Bundle bundle = msg.getData();
+            String string = bundle.getString("test");
+
+            data.add(string);
+            data.add("#############################\n\n");
+            showInput.append(string);
+            // data.sort
+           // data.update();
+            // Sortera datan efter relevans och displaya den,
+            //showInput.append("\n"+string);
+            Log.d("myTag", "Handler ran "+string);
+            return false;
+        }
+    });
+
+
+    String fetchResult(){ // Returns a string array with content
         return getIntent().getStringExtra(MainActivity.MESSAGE);
     }
-
 
     private class ParseUrl extends AsyncTask<String, Void, ArrayList<String>>{
         ProgressDialog pdLoading = new ProgressDialog(ResultPage.this);
@@ -117,24 +95,22 @@ public class ResultPage extends AppCompatActivity {
             String searchTerm = strings[0];
             
 
-            links = getLinks(searchTerm);
+            links = getLinks(searchTerm);  // Returns links as arraylist
             result = query(links,searchTerm);
             return result;
         }
 
         @Override
-        protected void onPostExecute(ArrayList result){
+        protected void onPostExecute(ArrayList result){ // get result från server
             pdLoading.dismiss();
             if(result.toString().equalsIgnoreCase("error")){
+                handleError("Search failed");
                 Log.d("meme2","Error");
-                //doSearch("Error at connection");
             }else{
-                //doSearch(result);
                 Log.d("meme","sucess "+result.toString());
                threadSearch(result);
             }
         }
-
     }
 
     ArrayList<String> query(ArrayList<String> links,String searchTerm){
@@ -148,6 +124,8 @@ public class ResultPage extends AppCompatActivity {
             con =(HttpURLConnection) url.openConnection(); // Opens connection
             con.setDoOutput(true);
             con.setDoInput(true);
+            con.setReadTimeout(READ_TIMEOUT);
+            con.setConnectTimeout(CONNECTION_TIMEOUT);
 
             domains = getDomain(links);  // Returns just the domains without /links
 
@@ -169,14 +147,12 @@ public class ResultPage extends AppCompatActivity {
 
         }catch (Exception e){
             e.printStackTrace();
-            // Do something here Query failed
+            handleError("Connection error");
         }
         if(con != null){
             try{
                 int response_code = con.getResponseCode();
                 if(response_code == HttpURLConnection.HTTP_OK){ // Check if connection is made
-
-
                     // Read data from server
                     InputStream input = con.getInputStream();
                     BufferedReader reader = new BufferedReader(new InputStreamReader(input));
@@ -203,17 +179,15 @@ public class ResultPage extends AppCompatActivity {
         }else{
             return error;
         }
-
-        
     }
 
-    public void threadSearch(ArrayList result){
+    void threadSearch(ArrayList result){
         Thread[] threads = new Thread[result.size()];
 
         for(int i=0;i<threads.length;i++){
             threads[i] = new Thread(new ResultPage.UrlRun(result.get(i).toString()));
             threads[i].start();
-            Log.d(i+"", "Thread created"+i);
+            Log.d(i+"", "Thread created "+i);
         }
     }
     
@@ -238,7 +212,6 @@ public class ResultPage extends AppCompatActivity {
             try {
                 URL url = new URL(input.get(i).toString());
                 matches.add(url.getHost());
-
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -257,7 +230,7 @@ public class ResultPage extends AppCompatActivity {
             StringBuilder text = new StringBuilder(); // använder vi för appenda text
             try{
                 Document doc = Jsoup.connect(this.link).get();
-                Elements ps = doc.select("p");
+                Elements ps = doc.select("div p");
 
                 for(Element e : ps){
                     text.append(e.text());
@@ -272,21 +245,16 @@ public class ResultPage extends AppCompatActivity {
             Bundle bundle = new Bundle();
             bundle.putString("test",this.link+ text.toString());
             msg.setData(bundle);
+
             handler.sendMessage(msg);
         }     // call handler to update ui
     }
 
 
+    void handleError(String result){
+        Intent intent = new Intent(this, MainActivity.class);  // An intent is used to do something
+        intent.putExtra(MESSAGE,result);  // Adds
+        startActivity(intent);
+    }
 
-    Handler handler = new Handler(new Handler.Callback() {
-        @Override
-        public boolean handleMessage(Message msg){
-            Bundle bundle = msg.getData();
-            String string = bundle.getString("test");
-
-            showInput.append("\n"+string);
-            Log.d("myTag", "Handler ran "+string);
-            return false;
-        }
-    });
 }
