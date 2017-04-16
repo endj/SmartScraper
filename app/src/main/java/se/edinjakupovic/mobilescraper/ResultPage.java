@@ -95,7 +95,7 @@ public class ResultPage extends AppCompatActivity {
             String searchTerm = strings[0];
             
 
-            links = getLinks(searchTerm);  // Returns links as arraylist
+            links = UrlGet.getLinks(searchTerm);  // Returns links as arraylist
             result = query(links,searchTerm);
             return result;
         }
@@ -127,7 +127,7 @@ public class ResultPage extends AppCompatActivity {
             con.setReadTimeout(READ_TIMEOUT);
             con.setConnectTimeout(CONNECTION_TIMEOUT);
 
-            domains = getDomain(links);  // Returns just the domains without /links
+            domains = UrlGet.getDomain(links);  // Returns just the domains without /links
 
             Uri.Builder builder = new Uri.Builder().appendQueryParameter("search",searchTerm);// set parameter
             builder.appendQueryParameter("numOfLinks",links.size()+"");
@@ -189,34 +189,6 @@ public class ResultPage extends AppCompatActivity {
             threads[i].start();
             Log.d(i+"", "Thread created "+i);
         }
-    }
-    
-    ArrayList<String> getLinks(String searchTerm){
-        ArrayList<String> links = new ArrayList<>();
-        try{
-            Document doc = Jsoup.connect("https://www.google.se/search?q="+searchTerm).get();
-            Elements searchLinks = doc.select("h3.r > a");
-            for(Element e : searchLinks){
-                links.add(e.attr("href"));
-            }
-        }catch (Throwable e){
-            e.printStackTrace();
-        }
-        return links;
-    }
-
-    ArrayList<String> getDomain(ArrayList input){
-        ArrayList<String> matches = new ArrayList<>();
-
-        for(int i=0;i < input.size();i++){
-            try {
-                URL url = new URL(input.get(i).toString());
-                matches.add(url.getHost());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return matches;
     }
 
     public class UrlRun implements Runnable { //constructor, svartmagi för att passa data till runnablen
