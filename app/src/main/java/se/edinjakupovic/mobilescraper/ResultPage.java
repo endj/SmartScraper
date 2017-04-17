@@ -59,10 +59,11 @@ public class ResultPage extends AppCompatActivity {
         @Override
         public boolean handleMessage(Message msg){
             Bundle bundle = msg.getData();
-            String string = bundle.getString("text");
+            String text = bundle.getString("text");
             double relevance = bundle.getDouble("relevance");
 
-            data.add(string);
+            FormatedText xd = new FormatedText(text,relevance);
+            data.add(text);
             data.add("#############################\n\n");
             showInput.append(Double.toString(relevance));
             //showInput.append(string);
@@ -70,7 +71,7 @@ public class ResultPage extends AppCompatActivity {
            // data.update();
             // Sortera datan efter relevans och displaya den,
             //showInput.append("\n"+string);
-            Log.d("myTag", "Handler ran "+string);
+            Log.d("myTag", "Handler ran "+text);
             return false;
         }
     });
@@ -121,7 +122,6 @@ public class ResultPage extends AppCompatActivity {
 
     ArrayList<String> query(ArrayList<String> links,String searchTerm){
         ArrayList<String> Result = new ArrayList<>();
-        ArrayList<String> error = new ArrayList<>();
         ArrayList<String> domains;
         HttpURLConnection con = null;
         URL url;
@@ -172,18 +172,18 @@ public class ResultPage extends AppCompatActivity {
                     Log.d("",Result.toString());
                     return Result;
                 }else{
-                    error.add("failed responce code not ok");
-                    return error;
+                    Result.add("failed responce code not ok");
+                    return Result;
                 }
             }catch(IOException e2){
                 e2.printStackTrace();
-                error.add("exception");
-                return error;
+                Result.add("exception");
+                return Result;
             } finally {
                 con.disconnect();
             }
         }else{
-            return error;
+            return Result;
         }
     }
 
