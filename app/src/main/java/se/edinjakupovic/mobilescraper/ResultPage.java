@@ -27,6 +27,7 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class ResultPage extends AppCompatActivity {
     private TextView showInput;
@@ -43,8 +44,8 @@ public class ResultPage extends AppCompatActivity {
 
         showInput = (TextView) findViewById(R.id.textView);
 
-        final String Result = fetchResult(); // Our data
-        showInput.setText(Result);
+        final String Result = fetchResult(); // SearchTerm fecteedtrough intent
+        showInput.setText("");
         new ParseUrl().execute(Result);
 
 
@@ -58,11 +59,13 @@ public class ResultPage extends AppCompatActivity {
         @Override
         public boolean handleMessage(Message msg){
             Bundle bundle = msg.getData();
-            String string = bundle.getString("test");
+            String string = bundle.getString("text");
+            double relevance = bundle.getDouble("relevance");
 
             data.add(string);
             data.add("#############################\n\n");
-            showInput.append(string);
+            showInput.append(Double.toString(relevance));
+            //showInput.append(string);
             // data.sort
            // data.update();
             // Sortera datan efter relevans och displaya den,
@@ -79,6 +82,7 @@ public class ResultPage extends AppCompatActivity {
 
     private class ParseUrl extends AsyncTask<String, Void, ArrayList<String>>{
         ProgressDialog pdLoading = new ProgressDialog(ResultPage.this);
+
 
         @Override
         protected void onPreExecute(){
@@ -97,23 +101,26 @@ public class ResultPage extends AppCompatActivity {
 
             links = UrlGet.getLinks(searchTerm);  // Returns links as arraylist
             result = query(links,searchTerm);
-            return result;
+
+            return result; // echo from php
         }
 
         @Override
-        protected void onPostExecute(ArrayList result){ // get result från server
+        protected void onPostExecute(ArrayList result){ // Returns Url links + URL-Relevance-Mapping from database
+            Log.d("# OnPostEXECUTE #","line 108"+result.toString());
+
             pdLoading.dismiss();
             if(result.toString().equalsIgnoreCase("error")){
                 handleError("Search failed");
-                Log.d("meme2","Error");
+                Log.d("meme2",result.toString());
             }else{
-                Log.d("meme","sucess "+result.toString());
                threadSearch(result);
             }
         }
     }
 
     ArrayList<String> query(ArrayList<String> links,String searchTerm){
+        ArrayList<String> Result = new ArrayList<>();
         ArrayList<String> error = new ArrayList<>();
         ArrayList<String> domains;
         HttpURLConnection con = null;
@@ -133,6 +140,7 @@ public class ResultPage extends AppCompatActivity {
             builder.appendQueryParameter("numOfLinks",links.size()+"");
             for(int i=0;i<links.size();i++){
                 builder.appendQueryParameter("searchUrl"+i,links.get(i)); // full url
+                //Log.d("t"," \n\n SEARCH URL "+ links.get(i) + "\n\n DOMAIN URL"+ domains.get(i));
                 builder.appendQueryParameter("domainUrl"+i,domains.get(i)); // just domains
             }
             String query = builder.build().getEncodedQuery();
@@ -156,15 +164,13 @@ public class ResultPage extends AppCompatActivity {
                     // Read data from server
                     InputStream input = con.getInputStream();
                     BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-                    StringBuilder result = new StringBuilder();
                     String line;
 
                     while((line = reader.readLine())!=null){
-                        result.append(line);
+                        Result.add(line);
                     }
-                    links.add(result.toString());
-                    return links;
-                    //return(result.toString());
+                    Log.d("",Result.toString());
+                    return Result;
                 }else{
                     error.add("failed responce code not ok");
                     return error;
@@ -181,20 +187,27 @@ public class ResultPage extends AppCompatActivity {
         }
     }
 
-    void threadSearch(ArrayList result){
-        Thread[] threads = new Thread[result.size()];
+    void threadSearch(ArrayList result){ // result.get(thread-length-1) == relevance mapping
+        String Temp = result.toString();
+        String set[] = Temp.split("\\s+");
+        // set contains url to relevance mappings -> 0:url 1:R , 2:url 3:R
+        Thread[] threads = new Thread[set.length/2]; // sets number
 
-        for(int i=0;i<threads.length;i++){
-            threads[i] = new Thread(new ResultPage.UrlRun(result.get(i).toString()));
-            threads[i].start();
-            Log.d(i+"", "Thread created "+i);
+        for(int i=0, j=0; j<set.length-1; i++,j+=2){
+            Log.d("A",  j+"j "+set[j]+" j+1:"+set[j+1]);
+            Log.d("thread",i+" i");
+
+           threads[i] = new Thread(new ResultPage.UrlRun(set[j], Double.parseDouble(set[j+1])));
+           threads[i].start();
         }
     }
 
     public class UrlRun implements Runnable { //constructor, svartmagi för att passa data till runnablen
         private String link;
-        UrlRun(String _link) {
+        private double relevance;
+        UrlRun(String _link,double _relevance) {
             this.link = _link;
+            this.relevance = _relevance;
         }
 
         @Override
@@ -212,10 +225,11 @@ public class ResultPage extends AppCompatActivity {
             }
 
 
-            Log.d("abc", "URL RUNNABLE RUNNING" + this.link);
+            Log.d("abc", "LINE216 URL RUNNABLE RUNNING" + this.link);
             Message msg = handler.obtainMessage();
             Bundle bundle = new Bundle();
-            bundle.putString("test",this.link+ text.toString());
+            bundle.putDouble("relevance",this.relevance);
+            bundle.putString("text",this.link+ text.toString());
             msg.setData(bundle);
 
             handler.sendMessage(msg);
