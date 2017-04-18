@@ -46,26 +46,29 @@ public class ResultPage extends AppCompatActivity {
 
         final String Result = fetchResult(); // SearchTerm fecteedtrough intent
         showInput.setText("");
-        new ParseUrl().execute(Result);
+        new ParseUrl().execute(Result); // bakrundstask som körs i trådar nonblocking
 
 
 
     }
 
-    Handler handler = new Handler(new Handler.Callback() {
+    Handler handler = new Handler(new Handler.Callback() { // Recieves data from threads
         ArrayList<String> data = new ArrayList<>();
-
+// Sorts the data and uppdates the ui
 
         @Override
-        public boolean handleMessage(Message msg){
+        public boolean handleMessage(Message msg){ // Fetches data and sorts it
             Bundle bundle = msg.getData();
-            String text = bundle.getString("text");
+            String text = bundle.getString("text"); // Webscraped text
             double relevance = bundle.getDouble("relevance");
 
-            FormatedText xd = new FormatedText(text,relevance);
+            FormatedText xd = new FormatedText(text,relevance); // flytta till tråden
+
+
             data.add(text);
             data.add("#############################\n\n");
             showInput.append(Double.toString(relevance));
+            showInput.append(text);
             //showInput.append(string);
             // data.sort
            // data.update();
@@ -81,7 +84,7 @@ public class ResultPage extends AppCompatActivity {
         return getIntent().getStringExtra(MainActivity.MESSAGE);
     }
 
-    private class ParseUrl extends AsyncTask<String, Void, ArrayList<String>>{
+    private class ParseUrl extends AsyncTask<String, Void, ArrayList<String>>{ // får in sökningen
         ProgressDialog pdLoading = new ProgressDialog(ResultPage.this);
 
 
@@ -101,7 +104,7 @@ public class ResultPage extends AppCompatActivity {
             
 
             links = UrlGet.getLinks(searchTerm);  // Returns links as arraylist
-            result = query(links,searchTerm);
+            result = query(links,searchTerm); // Put search into database and returns most relavent links
 
             return result; // echo from php
         }
@@ -112,15 +115,15 @@ public class ResultPage extends AppCompatActivity {
 
             pdLoading.dismiss();
             if(result.toString().equalsIgnoreCase("error")){
-                handleError("Search failed");
+                    handleError("Search failed"); // IF error send user back to search and display error message
                 Log.d("meme2",result.toString());
             }else{
-               threadSearch(result);
+               threadSearch(result); // Create treads and webscrape links
             }
         }
     }
 
-    ArrayList<String> query(ArrayList<String> links,String searchTerm){
+    ArrayList<String> query(ArrayList<String> links,String searchTerm){ // Tar in söktermen och länkar
         ArrayList<String> Result = new ArrayList<>();
         ArrayList<String> domains;
         HttpURLConnection con = null;
@@ -140,7 +143,7 @@ public class ResultPage extends AppCompatActivity {
             builder.appendQueryParameter("numOfLinks",links.size()+"");
             for(int i=0;i<links.size();i++){
                 builder.appendQueryParameter("searchUrl"+i,links.get(i)); // full url
-                //Log.d("t"," \n\n SEARCH URL "+ links.get(i) + "\n\n DOMAIN URL"+ domains.get(i));
+                Log.d("t"," \n\n SEARCH URL "+ links.get(i) + "\n\n DOMAIN URL"+ domains.get(i));
                 builder.appendQueryParameter("domainUrl"+i,domains.get(i)); // just domains
             }
             String query = builder.build().getEncodedQuery();
@@ -166,8 +169,8 @@ public class ResultPage extends AppCompatActivity {
                     BufferedReader reader = new BufferedReader(new InputStreamReader(input));
                     String line;
 
-                    while((line = reader.readLine())!=null){
-                        Result.add(line);
+                    while((line = reader.readLine())!=null){ // pHP servern echoes out result and we fetch it here
+                        Result.add(line);   // Returns result as a string with whitspaces between url and result
                     }
                     Log.d("",Result.toString());
                     return Result;
@@ -189,13 +192,13 @@ public class ResultPage extends AppCompatActivity {
 
     void threadSearch(ArrayList result){ // result.get(thread-length-1) == relevance mapping
         String Temp = result.toString();
-        String set[] = Temp.split("\\s+");
+        String set[] = Temp.split("\\s+"); // splits on whitespace
         // set contains url to relevance mappings -> 0:url 1:R , 2:url 3:R
         Thread[] threads = new Thread[set.length/2]; // sets number
 
         for(int i=0, j=0; j<set.length-1; i++,j+=2){
-            Log.d("A",  j+"j "+set[j]+" j+1:"+set[j+1]);
-            Log.d("thread",i+" i");
+           // Log.d("A",  j+"j "+set[j]+" j+1:"+set[j+1]);
+          //  Log.d("thread",i+" i");
 
            threads[i] = new Thread(new ResultPage.UrlRun(set[j], Double.parseDouble(set[j+1])));
            threads[i].start();

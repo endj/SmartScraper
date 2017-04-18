@@ -5,10 +5,21 @@ package se.edinjakupovic.mobilescraper;
  */
 
 public class FormatedText {
-    private String xd;
-    private double dx;
+    private String websiteText;
+    private double relevance;
 
-    FormatedText(String xd, double dx){
-        this.xd = xd;
+    FormatedText(String websiteText, double relevance){
+        this.websiteText = websiteText;
+        this.relevance = relevance;
     }
+
+    void removeCookiesText(){
+
+    }
+
+    void removeDuplicateText(){
+
+    }
+
+
 }

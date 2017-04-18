@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 public class UrlGet {
 
-    static ArrayList<String> getLinks(String searchTerm){
+    static ArrayList<String> getLinks(String searchTerm){ // Goes to google, fetches top links
         ArrayList<String> links = new ArrayList<>();
         try{
             Document doc = Jsoup.connect("https://www.google.se/search?q="+searchTerm).get();
