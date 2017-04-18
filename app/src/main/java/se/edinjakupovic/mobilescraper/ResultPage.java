@@ -34,7 +34,7 @@ public class ResultPage extends AppCompatActivity {
     public static final String MESSAGE = "";
     final int READ_TIMEOUT =5000;
     final int CONNECTION_TIMEOUT=5000;
-    final String target = "http://192.168.10.208/kandidat/script.php?search=";
+    final String target = "http://192.168.1.74/kandidat/script.php?search=";
 
 
     @Override
@@ -175,7 +175,7 @@ public class ResultPage extends AppCompatActivity {
                     Log.d("",Result.toString());
                     return Result;
                 }else{
-                    Result.add("failed responce code not ok");
+                    Result.add("failed response code not ok");
                     return Result;
                 }
             }catch(IOException e2){
