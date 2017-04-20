@@ -10,25 +10,29 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.util.concurrent.Callable;
+
 /**
  * Crea ted by edinj on 19/04/2017.
  */
 
-class UrlRun implements Runnable { //constructor, svartmagi för att passa data till runnablen
+class UrlRun implements Callable<ThreadScrapeResult> { //constructor, svartmagi för att passa data till runnablen
     private String link;
     private double relevance;
-    private Handler handler;
-    UrlRun(String _link,double _relevance,Handler _handler) {
+
+
+    UrlRun(String _link,double _relevance) {
         this.link = _link;
         this.relevance = _relevance;
-        this.handler = _handler;
+
     }
 
     @Override
-    public void run() { // Webscrapa länken
+    public ThreadScrapeResult call() throws Exception { // Webscrapa länken
         StringBuilder text = new StringBuilder(); // använder vi för appenda text
         try{
             Document doc = Jsoup.connect(this.link).get();
+            doc.select("noscript,script,style,.hidden").remove();
             Elements ps = doc.select("div p");
 
             for(Element e : ps){
@@ -39,13 +43,7 @@ class UrlRun implements Runnable { //constructor, svartmagi för att passa data 
         }
 
 
-        Log.d("abc", "LINE216 URL RUNNABLE RUNNING" + this.link);
-        Message msg = handler.obtainMessage();
-        Bundle bundle = new Bundle();
-        bundle.putDouble("relevance",this.relevance);
-        bundle.putString("text",this.link+ text.toString());
-        msg.setData(bundle);
 
-        handler.sendMessage(msg);
+        return new ThreadScrapeResult(text.toString(), this.relevance);
     }     // call handler to update ui
 }

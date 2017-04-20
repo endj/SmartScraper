@@ -3,20 +3,22 @@ package se.edinjakupovic.mobilescraper;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 
 public class ResultPage extends AppCompatActivity {
     private TextView showInput;
-    public static final String MESSAGE = "";
- // abc
+    private static final String MESSAGE = "";
 
 
     @Override
@@ -32,24 +34,39 @@ public class ResultPage extends AppCompatActivity {
     }
 
 
+    void threadSearch(ArrayList result){ // result.get(thread-length-1) == relevance mapping
+        String Temp = result.toString();
+        String set[] = Temp.split("\\s+");
+        int numOfTreads = set.length/2;// splits on whitespace
+        ArrayList<ThreadScrapeResult> xd = new ArrayList<>();
 
-    Handler handler = new Handler(new Handler.Callback() { // Recieves data from threads
-        ArrayList<String> data = new ArrayList<>();
-// Sorts the data and uppdates the ui
-        @Override
-        public boolean handleMessage(Message msg){ // Fetches data and sorts it
-            Bundle bundle = msg.getData();
-            String text = bundle.getString("text"); // Webscraped text
-            double relevance = bundle.getDouble("relevance");
 
-            data.add(text);
-            data.add("#############################\n\n");
-            showInput.append(Double.toString(relevance));
-            showInput.append(text);
-            Log.d("myTag", "Handler ran "+text);
-            return false;
+        List<Callable<ThreadScrapeResult>> callableTasks = new ArrayList<>();
+        for(int i=0, j=0; j<set.length-1; i++,j+=2){
+            callableTasks.add(new UrlRun(set[j],Double.parseDouble(set[j+1])));
         }
-    });
+
+        ExecutorService executor = Executors.newFixedThreadPool(numOfTreads); // #of threads
+        try {
+            List<Future<ThreadScrapeResult>> futures = executor.invokeAll(callableTasks);
+            for (Future futurex:futures) {
+                xd.add((ThreadScrapeResult) futurex.get());
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
+
+       // for(int i=0; i< numOfTreads ; i++){
+          //  ThreadScrapeResult xxd = xd.get(i)
+        //}
+
+        System.out.println("AAAAAAAAAAAAAAAAAAAAAA"+xd.get(3).getText());
+        showInput.setText(xd.get(3).getText());
+
+
+    }
+
 
 
 
@@ -89,16 +106,7 @@ public class ResultPage extends AppCompatActivity {
 
 
 
-    void threadSearch(ArrayList result){ // result.get(thread-length-1) == relevance mapping
-        String Temp = result.toString();
-        String set[] = Temp.split("\\s+"); // splits on whitespace
-        Thread[] threads = new Thread[set.length/2]; // sets number
 
-        for(int i=0, j=0; j<set.length-1; i++,j+=2){
-           threads[i] = new Thread(new UrlRun(set[j],Double.parseDouble(set[j+1]), handler));
-           threads[i].start();
-        }
-    }
 
 
 
