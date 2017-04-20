@@ -16,7 +16,7 @@ import java.util.ArrayList;
 public class ResultPage extends AppCompatActivity {
     private TextView showInput;
     public static final String MESSAGE = "";
-
+ // abc
 
 
     @Override
