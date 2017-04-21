@@ -88,6 +88,7 @@ class DB {
                 return Result;
             } finally {
                 con.disconnect();
+
             }
         }else{
             return Result;

@@ -42,8 +42,8 @@ class UrlRun implements Callable<ThreadScrapeResult> { //constructor, svartmagi 
             e.printStackTrace();
         }
 
-
-
-        return new ThreadScrapeResult(text.toString(), this.relevance);
+        ThreadScrapeResult result = new ThreadScrapeResult(text.toString(), this.relevance, this.link);
+        result.Summarize();
+        return result;
     }     // call handler to update ui
 }
