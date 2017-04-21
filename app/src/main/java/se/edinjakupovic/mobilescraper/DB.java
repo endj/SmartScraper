@@ -15,8 +15,14 @@ import java.net.URL;
 import java.util.ArrayList;
 
 /**
- * Created by edinj on 19/04/2017.
+ * DB.java - A class that handles all database queries
+ * @author Edin Jakupovic
+ * @version 1.0
+ *
+ *
  */
+
+
 
 class DB {
 
@@ -26,7 +32,20 @@ class DB {
     private final int CONNECTION_TIMEOUT=5000;
     private final String target = "http://192.168.10.208/kandidat/script.php?search=";
 
-    ArrayList<String> query(ArrayList<String> links, String searchTerm){ // Tar in söktermen och länkar
+
+    /**
+    * Post's to a php file where the queries are performed. Recieves
+    * the result as a String from the server.
+    *
+    * @param links An arrayList containing the links found from google
+    * @param searchTerm The search performed by user
+    * @return Result The result is a String with the pattern
+    * " Url1 Relevance_1 Url2 Relevance2 .... UrlN RelevanceN "
+    * Needs to be .split
+    *
+    * */
+
+    ArrayList<String> query(ArrayList<String> links, String searchTerm){
         ArrayList<String> Result = new ArrayList<>();
         ArrayList<String> domains;
         HttpURLConnection con;
@@ -34,24 +53,24 @@ class DB {
 
         try{
             url = new URL(target);
-            con =(HttpURLConnection) url.openConnection(); // Opens connection
+            con =(HttpURLConnection) url.openConnection();
             con.setDoOutput(true);
             con.setDoInput(true);
             con.setReadTimeout(READ_TIMEOUT);
             con.setConnectTimeout(CONNECTION_TIMEOUT);
 
-            domains = UrlGet.getDomain(links);  // Returns just the domains without /links
+            domains = UrlGet.getDomain(links);
 
-            Uri.Builder builder = new Uri.Builder().appendQueryParameter("search",searchTerm);// set parameter
+            Uri.Builder builder = new Uri.Builder().appendQueryParameter("search",searchTerm);
             builder.appendQueryParameter("numOfLinks",links.size()+"");
             for(int i=0;i<links.size();i++){
-                builder.appendQueryParameter("searchUrl"+i,links.get(i)); // full url
+                builder.appendQueryParameter("searchUrl"+i,links.get(i));
                 Log.d("t"," \n\n SEARCH URL "+ links.get(i) + "\n\n DOMAIN URL"+ domains.get(i));
-                builder.appendQueryParameter("domainUrl"+i,domains.get(i)); // just domains
+                builder.appendQueryParameter("domainUrl"+i,domains.get(i));
             }
             String query = builder.build().getEncodedQuery();
 
-            DataOutputStream wr = new DataOutputStream(con.getOutputStream()); // Connection for sending data
+            DataOutputStream wr = new DataOutputStream(con.getOutputStream());
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(wr, "UTF-8"));
             writer.write(query);
             writer.flush();
@@ -67,13 +86,13 @@ class DB {
         if(con != null){
             try{
                 int response_code = con.getResponseCode();
-                if(response_code == HttpURLConnection.HTTP_OK){ // Check if connection is made
-                    // Read data from server
+                if(response_code == HttpURLConnection.HTTP_OK){
+
                     InputStream input = con.getInputStream();
                     BufferedReader reader = new BufferedReader(new InputStreamReader(input));
                     String line;
 
-                    while((line = reader.readLine())!=null){ // pHP servern echoes out result and we fetch it here
+                    while((line = reader.readLine())!=null){
                         Result.add(line);   // Returns result as a string with whitspaces between url and result
                     }
                     Log.d("",Result.toString());

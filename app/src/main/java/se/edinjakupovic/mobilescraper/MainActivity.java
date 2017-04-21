@@ -9,6 +9,20 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+/**
+* MainActivity.java - Start activity for the class.
+* User inputs their search in the search field and clicks
+* on the search button.
+*
+* Sets up the Trie which hold words to ignore during the textformating
+* @see ThreadScrapeResult
+*
+* @author Edin Jakupovic
+* @version 1.0
+*
+*
+* */
+
 public class MainActivity extends AppCompatActivity {
     public static final String MESSAGE = "N";
     public static Trie IgnoreWordTrie;
@@ -17,8 +31,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         IgnoreWordTrie = initTree();
-        System.out.println("Finns ordet found=? " +IgnoreWordTrie.search("found"));
-        System.out.println("Finns ordet bazing=? "+IgnoreWordTrie.search("bazing"));
         setContentView(R.layout.activity_main);
 
 
@@ -44,18 +56,35 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
+    /**
+    * Changes intent to the ResultPage and passes
+    * the search term
+    *
+    * @param result Search term of the user
+    * */
     void doSearch(String result){
-        Intent intent = new Intent(this, ResultPage.class);  // An intent is used to do something
-        intent.putExtra(MESSAGE,result);  // Adds
+        Intent intent = new Intent(this, ResultPage.class);
+        intent.putExtra(MESSAGE,result);
         startActivity(intent);
     }
 
-
+    /**
+    * Used mostly to fetch error message due to
+    * failed connection in the ResultPage activity
+    * or similar
+    * @return Intent Returns a message
+    * */
     String fetchResult(){ // Returns a string array with content
         return getIntent().getStringExtra(MainActivity.MESSAGE);
     }
 
+
+    /**
+    * Initiates the IngoreWordTree @see ThreadScrapeResult
+    * with words to ignore
+    *
+    * @return IgnoreWordTrie Returns a Trie object filled with words
+    * */
     Trie initTree(){
         String[] IgnoreWord = {"-", " ", ",", ".", "a", "e", "i", "o", "u", "t", "about", "above",
                 "above", "across", "after", "afterwards", "again", "against", "all",

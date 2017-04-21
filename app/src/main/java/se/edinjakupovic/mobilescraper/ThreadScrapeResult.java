@@ -5,8 +5,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by edinj on 20/04/2017.
+ * ThreadScrapeResult.java - Class responsible for creating a short and
+ * informative summary from a larger section of text. Achives this trough
+ * ranking each sentence based on different criteries
  *
+ * @author Edin Jakupovic
+ * @version 1.0
  *
  */
 class ThreadScrapeResult {
@@ -25,6 +29,14 @@ class ThreadScrapeResult {
     }
 
 
+
+    /**
+    * Splits up the input text to sentences and assigns them a score based on
+    * relevance. The n most relevant articles are returned based on input
+    *
+    *   @return The most relevant sentences as a String
+    *
+    * */
     String Summarize(){
         ArrayList<String> sentences;
       //  int lines;
@@ -32,15 +44,15 @@ class ThreadScrapeResult {
      //   boolean previous;
      //   String currentWord;
 
-        sentences = split_sentences(this.text); // Hämtar meningar
+        sentences = split_sentences(this.text);
 
-        for (String s: sentences) {  // För varje sentence
+        for (String s: sentences) {
             ArrayList<String> words;
-            words = split_words(s); // get words of a sentence
+            words = split_words(s);
             for (String word : words) {
 
                 if (MainActivity.IgnoreWordTrie.search(word)){
-                    // kys
+                    assert(1==1);
                 }
 
             }
@@ -73,7 +85,12 @@ class ThreadScrapeResult {
         return "b";
     }
 
-
+    /**
+    *   Splits text up into sentences, splitting at .!? .
+    *
+    * @param inputText Takes all webscraped text as a String
+    * @return sentences Return an ArrayList of Strings containing sentences
+    * */
     private ArrayList<String> split_sentences(String inputText){
         ArrayList<String> sentences = new ArrayList<>();
         Pattern p = Pattern.compile("[^.!?\\s][^.!?]*(?:[.!?](?!['\"]?\\s|$)[^.!?]*)*[.!?]?['\"]?(?=\\s|$)", Pattern.MULTILINE | Pattern.COMMENTS);
@@ -84,6 +101,13 @@ class ThreadScrapeResult {
         return sentences;
     }
 
+
+    /**
+    *   Splits a sentence to words [A-Za-z1-9_]
+    *
+    *   @param s A sentence from the ArrayList "sentences"
+    *   @return words Returns an ArrayList of words
+    * */
     private ArrayList<String> split_words(String s){
         ArrayList<String> words = new ArrayList<>();
 

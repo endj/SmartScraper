@@ -15,7 +15,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-
+/**
+* ResultPage.java - Page reached after a search is initiated.
+* Also where most of the computations are made
+*
+* @author Edin Jakupovic
+* @version 1.0
+* */
 public class ResultPage extends AppCompatActivity {
     private TextView showInput;
     private static final String MESSAGE = "";
@@ -29,14 +35,23 @@ public class ResultPage extends AppCompatActivity {
         showInput = (TextView) findViewById(R.id.textView);
         final String Result = getIntent().getStringExtra(MainActivity.MESSAGE); // SearchTerm fecteedtrough intent
         showInput.setText("");
-        new ParseUrl().execute(Result); // bakrundstask som körs i trådar nonblocking
+        new ParseUrl().execute(Result); // nonblocking
     }
 
+    /**
+     * Creates a thread for each searchresult from google. Up
+     * to 10 threads. An ExecutorService collects the ThreadScrapeResult
+     * from each thread. The result is sorted by relevance and displayed to ui
+     *
+     * @param result Contains the string returned from the DB @see DB
+     *
+     *
+     */
 
-    void threadSearch(ArrayList result){ // result.get(thread-length-1) == relevance mapping
+    void threadSearch(ArrayList result){
         String Temp = result.toString();
         String set[] = Temp.split("\\s+");
-        int numOfTreads = set.length/2;// splits on whitespace
+        int numOfTreads = set.length/2;
         ArrayList<ThreadScrapeResult> xd = new ArrayList<>();
 
 
@@ -56,9 +71,6 @@ public class ResultPage extends AppCompatActivity {
         }
 
 
-       // for(int i=0; i< numOfTreads ; i++){
-          //  ThreadScrapeResult xxd = xd.get(i)
-        //}
 
         System.out.println("AAAAAAAAAAAAAAAAAAAAAA"+xd.get(3).getText());
         showInput.setText(xd.get(3).getText());
@@ -67,9 +79,13 @@ public class ResultPage extends AppCompatActivity {
     }
 
 
-
-
-    private class ParseUrl extends AsyncTask<String, Void, ArrayList<String>>{ // får in sökningen
+    /**
+     * Performs the initial search to google and starts the
+     * threads which scrape the results.
+     * Input in doInBackground(String... string) is from user search
+     *
+     */
+    private class ParseUrl extends AsyncTask<String, Void, ArrayList<String>>{
         ProgressDialog pdLoading = new ProgressDialog(ResultPage.this);
 
 
@@ -83,42 +99,34 @@ public class ResultPage extends AppCompatActivity {
 
         @Override
         protected ArrayList<String> doInBackground(String... strings){
-            ArrayList<String> links; // Urls
+            ArrayList<String> links;
             ArrayList<String> result;
             String searchTerm = strings[0];
 
-            links = UrlGet.getLinks(searchTerm);  // Returns links as arraylist
-            result = new DB().query(links,searchTerm); // Put search into database and returns most relavent links
+            links = UrlGet.getLinks(searchTerm);
+            result = new DB().query(links,searchTerm);
             return result; // echo from php
         }
 
         @Override
-        protected void onPostExecute(ArrayList result){ // Returns Url links + URL-Relevance-Mapping from database
+        protected void onPostExecute(ArrayList result){
             pdLoading.dismiss();
             if(result.toString().equalsIgnoreCase("error")){
-                    handleError("Search failed"); // IF error send user back to search and display error message
+                    handleError("Search failed");
             }else{
-               threadSearch(result); // Create treads and webscrape links
+               threadSearch(result);
             }
         }
     }
 
 
-    Trie getTrie(){
-        if(MainActivity.IgnoreWordTrie != null){
-            return MainActivity.IgnoreWordTrie;
-        }else{
-            return null;
-        }
-    }
-
-
-
-
-
+    /**
+     * Recivies and displayes a error on the MainActivity
+    * @param result Gets an error message as a string
+    * */
     void handleError(String result){
-        Intent intent = new Intent(this, MainActivity.class);  // An intent is used to do something
-        intent.putExtra(MESSAGE,result);  // Adds
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra(MESSAGE,result);
         startActivity(intent);
     }
 

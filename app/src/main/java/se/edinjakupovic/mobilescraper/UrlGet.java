@@ -10,11 +10,22 @@ import java.net.URL;
 import java.util.ArrayList;
 
 /**
- * Created by edinj on 16/04/2017.
+ * UrlGet.java - Class that contains function for fetching links
+ * and formating the domain representation
+ *
+ * @author Edin Jakupovic
+ * @version 1.0
  */
 
-public class UrlGet {
+class UrlGet {
 
+
+    /**
+    *   Returns the frontpage links from a google search with the term searchTerm
+    *
+    *   @param searchTerm Input is gotten from the search screen
+    *   @return Returns the most popular links as an ArrayList
+    * */
     static ArrayList<String> getLinks(String searchTerm){ // Goes to google, fetches top links
         ArrayList<String> links = new ArrayList<>();
         try{
@@ -29,6 +40,16 @@ public class UrlGet {
         return links;
     }
 
+
+    /**
+    *   Returns only the domain part of an URL
+    *   example www.example.com/dir1/dir2/file.html
+    *   returns www.example.com
+    *
+    *   @param input An ArrayList containing urls from getURl as String
+    *   @return matches  Returns domains as ArrayList
+    *
+    * */
     static ArrayList<String> getDomain(ArrayList input){
         ArrayList<String> matches = new ArrayList<>();
 
