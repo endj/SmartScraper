@@ -2,6 +2,13 @@ TODO LIST:
 
 #DESIGN
 
+Implement Trie fill with keywords on startup
+
+In FormatedText object -> summarize text and collect with executor
+
+Sort by relevance and display
+
+
 Create our own list_item_row / use custom adapter listview
 when clicked expand a scrollable window and show buttons to url/collpase
 
