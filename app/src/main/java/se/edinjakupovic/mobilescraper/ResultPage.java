@@ -27,7 +27,6 @@ public class ResultPage extends AppCompatActivity {
         setContentView(R.layout.activity_result_page);
 
         showInput = (TextView) findViewById(R.id.textView);
-
         final String Result = getIntent().getStringExtra(MainActivity.MESSAGE); // SearchTerm fecteedtrough intent
         showInput.setText("");
         new ParseUrl().execute(Result); // bakrundstask som körs i trådar nonblocking
@@ -105,7 +104,13 @@ public class ResultPage extends AppCompatActivity {
     }
 
 
-
+    Trie getTrie(){
+        if(MainActivity.IgnoreWordTrie != null){
+            return MainActivity.IgnoreWordTrie;
+        }else{
+            return null;
+        }
+    }
 
 
 

@@ -1,5 +1,8 @@
 package se.edinjakupovic.mobilescraper;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,7 +10,7 @@ import java.util.Map;
  * Trie implementation for faster weooord lookup
  */
 
-public class Trie {
+class Trie{
     private Node root;
 
     Trie(){
@@ -35,13 +38,9 @@ public class Trie {
         }
     }
 
-    public boolean search(String word){
+    boolean search(String word){
         Node currentNode = searchNode(word);
-
-        if(currentNode != null && currentNode.endsWord)
-            return true;
-        else
-            return false;
+        return currentNode != null && currentNode.endsWord;
     }
 
 
@@ -65,11 +64,12 @@ public class Trie {
 
 
 
+
 }
 
 class Node{
     private char character;
-    HashMap<Character,Node> children = new HashMap<Character, Node>();
+    HashMap<Character,Node> children = new HashMap<>();
     boolean endsWord;
 
     Node(){}

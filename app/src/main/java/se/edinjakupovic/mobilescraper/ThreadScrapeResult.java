@@ -27,17 +27,23 @@ class ThreadScrapeResult {
 
     String Summarize(){
         ArrayList<String> sentences;
-        int lines;
-        double avgLength;
-        boolean previous;
-        String currentWord;
+      //  int lines;
+     //   double avgLength;
+     //   boolean previous;
+     //   String currentWord;
 
         sentences = split_sentences(this.text); // Hämtar meningar
 
         for (String s: sentences) {  // För varje sentence
-            ArrayList<String> words = new ArrayList<>();
+            ArrayList<String> words;
             words = split_words(s); // get words of a sentence
+            for (String word : words) {
 
+                if (MainActivity.IgnoreWordTrie.search(word)){
+                    // kys
+                }
+
+            }
 
         }
 
@@ -68,7 +74,7 @@ class ThreadScrapeResult {
     }
 
 
-    ArrayList<String> split_sentences(String inputText){
+    private ArrayList<String> split_sentences(String inputText){
         ArrayList<String> sentences = new ArrayList<>();
         Pattern p = Pattern.compile("[^.!?\\s][^.!?]*(?:[.!?](?!['\"]?\\s|$)[^.!?]*)*[.!?]?['\"]?(?=\\s|$)", Pattern.MULTILINE | Pattern.COMMENTS);
         Matcher match = p.matcher(inputText);
@@ -78,7 +84,7 @@ class ThreadScrapeResult {
         return sentences;
     }
 
-    ArrayList<String> split_words(String s){
+    private ArrayList<String> split_words(String s){
         ArrayList<String> words = new ArrayList<>();
 
         Pattern p = Pattern.compile("\\w+");

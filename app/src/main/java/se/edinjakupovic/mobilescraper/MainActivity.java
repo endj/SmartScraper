@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
     public static final String MESSAGE = "N";
-    public Trie IgnoreWordTrie;
+    public static Trie IgnoreWordTrie;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,9 +120,6 @@ public class MainActivity extends AppCompatActivity {
             IgnoreWordTrie.put(word);
         }
 
-        for (String word: IgnoreWord) {
-         //   System.out.println(IgnoreWordTrie.search(word));
-        }
         return IgnoreWordTrie;
     }
 
