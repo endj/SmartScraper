@@ -49,10 +49,12 @@ public class ResultPage extends AppCompatActivity {
      */
 
     void threadSearch(ArrayList result){
+
+
         String Temp = result.toString();
         String set[] = Temp.split("\\s+");
         int numOfTreads = set.length/2;
-        ArrayList<ThreadScrapeResult> xd = new ArrayList<>();
+        ArrayList<ThreadScrapeResult> summaries = new ArrayList<>();
 
 
         List<Callable<ThreadScrapeResult>> callableTasks = new ArrayList<>();
@@ -60,11 +62,13 @@ public class ResultPage extends AppCompatActivity {
             callableTasks.add(new UrlRun(set[j],Double.parseDouble(set[j+1])));
         }
 
+       // System.out.println("number of threads: "+numOfTreads);
         ExecutorService executor = Executors.newFixedThreadPool(numOfTreads); // #of threads
         try {
             List<Future<ThreadScrapeResult>> futures = executor.invokeAll(callableTasks);
+          //  System.out.println("Antal futures " +futures.size());
             for (Future futurex:futures) {
-                xd.add((ThreadScrapeResult) futurex.get());
+                summaries.add((ThreadScrapeResult) futurex.get());
             }
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
@@ -72,8 +76,8 @@ public class ResultPage extends AppCompatActivity {
 
 
 
-        System.out.println("AAAAAAAAAAAAAAAAAAAAAA"+xd.get(3).getText());
-        showInput.setText(xd.get(3).getText());
+       // System.out.println("AAAAAAAAAAAAAAAAAAAAAA"+xd.get(3).getText());
+        //showInput.setText(xd.get(3).getText());
 
 
     }

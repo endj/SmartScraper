@@ -65,7 +65,7 @@ class DB {
             builder.appendQueryParameter("numOfLinks",links.size()+"");
             for(int i=0;i<links.size();i++){
                 builder.appendQueryParameter("searchUrl"+i,links.get(i));
-                Log.d("t"," \n\n SEARCH URL "+ links.get(i) + "\n\n DOMAIN URL"+ domains.get(i));
+               // Log.d("t"," \n\n SEARCH URL "+ links.get(i) + "\n\n DOMAIN URL"+ domains.get(i));
                 builder.appendQueryParameter("domainUrl"+i,domains.get(i));
             }
             String query = builder.build().getEncodedQuery();

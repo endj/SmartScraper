@@ -97,9 +97,11 @@ class Trie{
 * for larger ascii coverage
 * */
 class Node{
-    private char character;
+    char character;
     HashMap<Character,Node> children = new HashMap<>();
     boolean endsWord;
+    int frequency = 0;
+    int minHeapIndex = -1;
 
     Node(){}
 

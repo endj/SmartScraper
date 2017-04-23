@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
         String[] IgnoreWord = {"-", " ", ",", ".", "a", "e", "i", "o", "u", "t", "about", "above",
                 "above", "across", "after", "afterwards", "again", "against", "all",
                 "almost", "alone", "along", "already", "also", "although", "always",
-                "am", "among", "amongst", "amoungst", "amount", "an", "and",
+                "am", "among", "amongst", "amoungst", "amount", "an", "and","s",
                 "another", "any", "anyhow", "anyone", "anything", "anyway",
                 "anywhere", "are", "around", "as", "at", "back", "be", "became",
                 "because", "become", "becomes", "becoming", "been", "before",
@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
                 "seem", "seemed", "seeming", "seems", "several", "she", "should",
                 "show", "side", "since", "sincere", "six", "sixty", "so", "some",
                 "somehow", "someone", "something", "sometime", "sometimes",
-                "somewhere", "still", "such", "take", "ten", "than", "that", "the",
+                "somewhere", "still", "such", "take", "ten", "than", "that", "the","The",
                 "their", "them", "themselves", "then", "thence", "there",
                 "thereafter", "thereby", "therefore", "therein", "thereupon",
                 "these", "they", "thickv", "thin", "third", "this", "those",
@@ -141,7 +141,21 @@ public class MainActivity extends AppCompatActivity {
                 "yung", "yun", "2", "3", "4", "5", "6", "7", "8", "9", "0", "time",
                 "january", "february", "march", "april", "may", "june", "july",
                 "august", "september", "october", "november", "december",
-                "government", "police"};
+                "government", "police","alla","allt","alltså","andra","att",
+                "bara","bli","blir","borde","bra","mitt","ser","dem","den","denna",
+                "det","detta","dig","din","dock","dom","där","edit","efter","eftersom",
+                "eller","ett","fast","fel","fick","finns","fram","från","får","fått",
+                "för","första","genom","ger","gör","går","göra","hade","han","har","hela",
+                "helt","honom","hur","hör","iaf","igen","ingen","inget","inte","jag","kan",
+                "kanske","kommer","lika","lite","man","med","men","mer","mig","min","mot",
+                "mycket","många","måste","nog","når","någon","något","några","nån","nåt","och",
+                "också","rött","samma","sedan","sen","sig","sin","själv","ska","skulle","som","sött"
+                ,"tar","till","tror","tycker","typ","upp","utan","vad","var","vara","vet"
+                ,"vid","vilket","vill","väl","även","över","våra","egen","är","på",
+                "en","du","ha","av","Det","det","så","om","mest","Här","samt","Så",
+                "här","nu","Har","Jag","jag","De","de","Nu","sitt","Och","hon","han",
+                "Vi","vi","träffar","berättar","se","än","på","På","ut","ta","En","en",
+                "få","när","För","ju","oss"};
 
         Trie IgnoreWordTrie = new Trie();
 

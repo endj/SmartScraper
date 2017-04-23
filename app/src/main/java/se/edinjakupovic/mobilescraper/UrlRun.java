@@ -22,10 +22,9 @@ class UrlRun implements Callable<ThreadScrapeResult> {
     private double relevance;
 
 
-    UrlRun(String _link,double _relevance) {
-        this.link = _link;
-        this.relevance = _relevance;
-
+    UrlRun(String link,double _relevance) {
+        this.link = link;
+        this.relevance = relevance;
     }
 
     /**
@@ -45,7 +44,8 @@ class UrlRun implements Callable<ThreadScrapeResult> {
                 text.append(e.text());
             }
         }catch (Throwable e){
-            e.printStackTrace();
+
+            //e.printStackTrace();
         }
 
         ThreadScrapeResult result = new ThreadScrapeResult(text.toString(), this.relevance, this.link);

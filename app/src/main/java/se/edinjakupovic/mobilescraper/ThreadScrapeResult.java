@@ -1,6 +1,16 @@
 package se.edinjakupovic.mobilescraper;
 
+import android.support.annotation.NonNull;
+
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,8 +38,6 @@ class ThreadScrapeResult {
         return text;
     }
 
-
-
     /**
     * Splits up the input text to sentences and assigns them a score based on
     * relevance. The n most relevant articles are returned based on input
@@ -37,15 +45,31 @@ class ThreadScrapeResult {
     *   @return The most relevant sentences as a String
     *
     * */
+
+    /*
+        Steps
+        1. Get sentences [x]
+        2. Get Keywords []
+        3. Split search term into words titlewords? []
+        4. Compute scores and rank them  []
+        5. Return highest ranked sentences. []
+
+    *
+     */
     String Summarize(){
         ArrayList<String> sentences;
+        ArrayList<String> keywords;
       //  int lines;
      //   double avgLength;
      //   boolean previous;
      //   String currentWord;
 
-        sentences = split_sentences(this.text);
+       // sentences = split_sentences(this.text);
+        keywords = getkeyWords(this.text);
 
+        System.out.println(keywords);
+
+        /*
         for (String s: sentences) {
             ArrayList<String> words;
             words = split_words(s);
@@ -56,8 +80,7 @@ class ThreadScrapeResult {
                 }
 
             }
-
-        }
+        }*/
 
         /*
         *   keyword = (text) -> Returnerar 10mest populära orden inte i blacklist
@@ -74,14 +97,7 @@ class ThreadScrapeResult {
         *
         * dbs -> kolla github
         *
-        *
-        *
-        *
          */
-
-
-
-
         return "b";
     }
 
@@ -116,10 +132,72 @@ class ThreadScrapeResult {
         while (match.find()) {
             words.add(match.group());
         }
-
         return words;
     }
 
 
+    /**
+     *
+     * @param text
+     * @return keyWords Returns all word
+     */
+    private ArrayList<String> getkeyWords(String text){
+        HashMap<String,Integer> keyWords = new HashMap<>();
+        ArrayList<String> topKeyWord;
+        ArrayList<String> textWords = split_words(text);
 
+        for (String word : textWords) {
+           if (!MainActivity.IgnoreWordTrie.search(word)){
+               if(!keyWords.containsKey(word)){
+                   keyWords.put(word,1);
+                   // if the current word is not ignored
+               }else{
+                   keyWords.put(word, keyWords.get(word)+1); // add it if exist replace+1
+               }
+           }
+        }
+
+        topKeyWord = sortMap(keyWords);
+
+
+        return topKeyWord;
+    }
+
+    private ArrayList<String> sortMap(final HashMap<String,Integer> allKeywords){
+        PriorityQueue<Word> p = new PriorityQueue<>();
+
+        for(Map.Entry<String,Integer> entry : allKeywords.entrySet()){
+            if(p.size() < 10){
+                p.add(new Word(entry.getKey(), entry.getValue()));
+            }else if(entry.getValue() > p.peek().freq){
+                p.remove();
+                p.add(new Word(entry.getKey(),entry.getValue()));
+            }
+        }
+
+        ArrayList<String> result = new ArrayList<>();
+        while(p.size() > 0){
+            result.add(p.remove().word);
+        }
+
+        return result;
+    }
+
+
+}
+
+class Word implements Comparable<Word>{
+    String word;
+    int freq;
+
+    Word(String w, int f){
+        this.word = w;
+        this.freq = f;
+    }
+
+
+    @Override
+    public int compareTo(@NonNull Word o) {
+        return this.freq - o.freq;
+    }
 }
