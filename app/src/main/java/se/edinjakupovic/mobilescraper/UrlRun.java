@@ -22,7 +22,7 @@ class UrlRun implements Callable<ThreadScrapeResult> {
     private double relevance;
 
 
-    UrlRun(String link,double _relevance) {
+    UrlRun(String link,double relevance) {
         this.link = link;
         this.relevance = relevance;
     }
@@ -44,7 +44,7 @@ class UrlRun implements Callable<ThreadScrapeResult> {
                 text.append(e.text());
             }
         }catch (Throwable e){
-
+            System.out.println("## FAIL ##");
             //e.printStackTrace();
         }
 

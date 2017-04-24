@@ -9,6 +9,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.util.Collections;
+import java.util.HashSet;
+
 /**
 * MainActivity.java - Start activity for the class.
 * User inputs their search in the search field and clicks
@@ -25,12 +28,12 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
     public static final String MESSAGE = "N";
-    public static Trie IgnoreWordTrie;
+    public static HashSet IgnoreWordSet;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        IgnoreWordTrie = initTree();
+        IgnoreWordSet = initIgnoreSet();
         setContentView(R.layout.activity_main);
 
 
@@ -85,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
     *
     * @return IgnoreWordTrie Returns a Trie object filled with words
     * */
-    Trie initTree(){
+    HashSet<String> initIgnoreSet(){
         String[] IgnoreWord = {"-", " ", ",", ".", "a", "e", "i", "o", "u", "t", "about", "above",
                 "above", "across", "after", "afterwards", "again", "against", "all",
                 "almost", "alone", "along", "already", "also", "although", "always",
@@ -152,18 +155,16 @@ public class MainActivity extends AppCompatActivity {
                 "också","rött","samma","sedan","sen","sig","sin","själv","ska","skulle","som","sött"
                 ,"tar","till","tror","tycker","typ","upp","utan","vad","var","vara","vet"
                 ,"vid","vilket","vill","väl","även","över","våra","egen","är","på",
-                "en","du","ha","av","Det","det","så","om","mest","Här","samt","Så",
+                "en","du","ha","av","Det","så","om","mest","Här","samt","Så",
                 "här","nu","Har","Jag","jag","De","de","Nu","sitt","Och","hon","han",
                 "Vi","vi","träffar","berättar","se","än","på","På","ut","ta","En","en",
                 "få","när","För","ju","oss"};
 
-        Trie IgnoreWordTrie = new Trie();
+        HashSet<String> Ignore = new HashSet<>(IgnoreWord.length);
 
-        for (String word: IgnoreWord) {
-            IgnoreWordTrie.put(word);
-        }
+        Collections.addAll(Ignore, IgnoreWord);
 
-        return IgnoreWordTrie;
+        return Ignore;
     }
 
 

@@ -29,7 +29,7 @@ class UrlGet {
     static ArrayList<String> getLinks(String searchTerm){ // Goes to google, fetches top links
         ArrayList<String> links = new ArrayList<>();
         try{
-            Document doc = Jsoup.connect("https://www.google.com/search?q="+searchTerm).get();
+            Document doc = Jsoup.connect("https://www.google.se/search?q="+searchTerm).get();
             Elements searchLinks = doc.select("h3.r > a");
             for(Element e : searchLinks){
                 links.add(e.attr("href"));

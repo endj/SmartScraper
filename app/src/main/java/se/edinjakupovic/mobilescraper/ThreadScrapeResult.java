@@ -1,18 +1,11 @@
 package se.edinjakupovic.mobilescraper;
 
-import android.support.annotation.NonNull;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
 
 /**
  * ThreadScrapeResult.java - Class responsible for creating a short and
@@ -34,9 +27,58 @@ class ThreadScrapeResult {
         this.searchTerm = searchTerm;
     }
 
-    String getText() {
-        return text;
+
+    private ArrayList<String> score(ScoreDTO S){
+        ArrayList<String> words;
+        ArrayList<SentenceScore> summaries = new ArrayList<>();
+
+        double sbs;
+        double dbs;
+        double frequency;
+        double searchFeatureS;
+        double sentenceLengthS;
+        double sentencePositionS;
+        double totalScore;
+        int sentencesLength = S.getSentence().size();
+        int counter =1;
+
+        for (String sentence: S.getSentence()) {
+            counter++;
+            words = TF.split_words(sentence);
+            searchFeatureS = titleScore(S.getTitleWords(),words);
+            sentenceLengthS = lengthScore(sentence);
+            sentencePositionS = positionScore(sentencesLength,counter);
+            sbs = keyWordDensity(sentence,S.getKeyWords());
+            dbs = dbs(sentence,S.getKeyWords());
+            frequency = (sbs+dbs)/2 * 10;
+
+            totalScore = (searchFeatureS*1.5+ frequency*2 +sentenceLengthS+
+            sentencePositionS*1)/4;
+
+            summaries.add(new SentenceScore(sentence,totalScore));
+
+        }
+        Collections.sort(summaries);
+        ArrayList<String> test = new ArrayList<>();
+        for (int i=0;i<summaries.size();i++){
+            if(i == summaries.size()){
+                return test;
+            }else if(i < 5){
+                test.add(summaries.get(i).getSentence());
+
+            }
+        }
+        /*
+        int j=0;
+        while (!summaries.isEmpty() || j < 5){
+            j++;
+            test.add(summaries.get(j).getSentence());
+        }*/
+
+        return test;
     }
+
+
 
     /**
     * Splits up the input text to sentences and assigns them a score based on
@@ -46,108 +88,164 @@ class ThreadScrapeResult {
     *
     * */
 
-    /*
-        Steps
-        1. Get sentences [x]
-        2. Get Keywords []
-        3. Split search term into words titlewords? []
-        4. Compute scores and rank them  []
-        5. Return highest ranked sentences. []
 
-    *
-     */
     String Summarize(){
         ArrayList<String> sentences;
-        ArrayList<String> keywords;
-      //  int lines;
-     //   double avgLength;
-     //   boolean previous;
-     //   String currentWord;
+        ArrayList<KeyWord> keywords;
+        ArrayList<String> titleWords;
+        ArrayList<String> ranks;
 
-       // sentences = split_sentences(this.text);
+        sentences = TF.split_sentences(this.text);
+
+        if(sentences.size() <= 5){
+            return sentences.toString();
+        }
+
         keywords = getkeyWords(this.text);
+        titleWords = getTitleWords(this.searchTerm);
 
-        System.out.println(keywords);
-
-        /*
-        for (String s: sentences) {
-            ArrayList<String> words;
-            words = split_words(s);
-            for (String word : words) {
-
-                if (MainActivity.IgnoreWordTrie.search(word)){
-                    assert(1==1);
-                }
-
-            }
-        }*/
-
-        /*
-        *   keyword = (text) -> Returnerar 10mest populära orden inte i blacklist
-        *
-        *   1. splitta alla ord i texten.
-        *   2. Kolla antal ord i texten innan blacklist.
-        *   3. freq = räkna antal ord i text som inte är Ignorewords(blacklistade)
-        *   4. Stoppa in alla orden som inte är IgnoreWords i en hasmap, varje gång ordet hittas
-        *       incrementera <key,value> value med 1. När e klar, returnera 10 mest populära ordern.
-        *
-        *  sbs = (sentence , keywords ) -> Tar in 10 mest populra orden + meningen, För varje hittat ord
-        *  öka meningens värde med keywordets hashmap värde.
-        *  sbs = number of keywords in a sentence scalled to sentence length
-        *
-        * dbs -> kolla github
-        *
-         */
+        ScoreDTO summary = new ScoreDTO(sentences,titleWords,keywords);
+        ranks = score(summary);
+        System.out.println(ranks.toString());
         return "b";
     }
 
-    /**
-    *   Splits text up into sentences, splitting at .!? .
-    *
-    * @param inputText Takes all webscraped text as a String
-    * @return sentences Return an ArrayList of Strings containing sentences
-    * */
-    private ArrayList<String> split_sentences(String inputText){
-        ArrayList<String> sentences = new ArrayList<>();
-        Pattern p = Pattern.compile("[^.!?\\s][^.!?]*(?:[.!?](?!['\"]?\\s|$)[^.!?]*)*[.!?]?['\"]?(?=\\s|$)", Pattern.MULTILINE | Pattern.COMMENTS);
-        Matcher match = p.matcher(inputText);
-        while (match.find()) {
-            sentences.add(match.group());
+    private double titleScore(ArrayList<String> titlewords,ArrayList<String> sentence){
+        int count = 0;
+        int titleWords =titlewords.size();
+        for (String titleword: titlewords) {
+            if(sentence.contains(titleword) &&
+                    !MainActivity.IgnoreWordSet.contains(titleword)){
+                count++;
+            }
         }
-        return sentences;
+        if(titleWords == 0 || count == 0){
+            return 0;
+        }
+            return count/titleWords;
+    }
+
+    private double positionScore(int sentenceSize,int count){
+        double normalized = count/sentenceSize;
+        double score=0;
+
+        if(isBetween(normalized,0,0.1)){ score = 0.17; }
+        if(isBetween(normalized,0.1,0.2)){ score = 0.23; }
+        if(isBetween(normalized,0.2,0.3)){ score = 0.14; }
+        if(isBetween(normalized,0.3,0.4)){ score = 0.08; }
+        if(isBetween(normalized,0.4,0.5)){ score = 0.05; }
+        if(isBetween(normalized,0.5,0.6)){ score = 0.04; }
+        if(isBetween(normalized,0.6,0.7)){ score = 0.06; }
+        if(isBetween(normalized,0.7,0.8)){ score = 0.04; }
+        if(isBetween(normalized,0.8,0.9)){ score = 0.04; }
+        if(isBetween(normalized,0.9,1)){ score = 0.15; }
+
+        return score;
+    }
+
+    private boolean isBetween(double num,double x, double y){
+        return num > x && num <= y;
+    }
+
+    private double lengthScore(String sentence){
+        return 1-Math.abs(15-sentence.length())/15;
+    }
+
+    private double keyWordDensity(String sentence, ArrayList<KeyWord> keywords){
+        int score = 0;
+        if(sentence.length() == 0){
+            return 0;
+        }
+        ArrayList<String> words = TF.split_words(sentence);
+
+        for(int i=0;i<keywords.size();i++){
+            KeyWord current = keywords.get(i);
+            if(words.contains(current.word)){
+                keywords.remove(keywords.indexOf(current));
+                i--;
+            }
+
+        }
+        /*
+        for (KeyWord key: keywords) {
+            if(words.contains(key.word)){
+                score = score+1;
+                keywords.remove(key);
+            }
+        }*/
+
+
+        return (1/Math.abs(words.size()) * score)/10;
+    }
+
+    private int getKeyWordScore(ArrayList<KeyWord> keywords, String word){
+        for (KeyWord key: keywords) {
+            if(key.word.equals(word)){
+                return  key.score;
+            }
+        }
+        return 0;
+    }
+
+    private double dbs(String sentence, ArrayList<KeyWord> keywords){
+        ArrayList<KeyScore> first = new ArrayList<>();
+        ArrayList<KeyScore> second;
+        double sum=0;
+
+        if(sentence.length() == 0){
+            return 0;
+        }
+        int score;
+        ArrayList<String> words = TF.split_words(sentence);
+
+        int i=0;
+        for (String word: words) {
+            i++;
+            if(!MainActivity.IgnoreWordSet.contains(word)){
+                score = getKeyWordScore(keywords,word);
+                if(first.isEmpty()){
+                    first.add(new KeyScore(score,i));
+                }else{
+                    second = first;
+                    first.add(new KeyScore(score,i));
+                    int dif = first.get(0).score - second.get(0).score;
+                    sum += (first.get(1).score*second.get(1).score)/(Math.pow(dif,2));
+                }
+            }
+
+        }
+        int k = SentenceKeyIntersection(keywords,words)+1;
+
+        return (1/(k*(k+1))*sum);
     }
 
 
-    /**
-    *   Splits a sentence to words [A-Za-z1-9_]
-    *
-    *   @param s A sentence from the ArrayList "sentences"
-    *   @return words Returns an ArrayList of words
-    * */
-    private ArrayList<String> split_words(String s){
-        ArrayList<String> words = new ArrayList<>();
-
-        Pattern p = Pattern.compile("\\w+");
-        Matcher match = p.matcher(s);
-        while (match.find()) {
-            words.add(match.group());
+    private int SentenceKeyIntersection(ArrayList<KeyWord> keys,ArrayList<String> words){
+        int intersections=0;
+        for(KeyWord key : keys){
+            if(words.contains(key.word)){
+               intersections++;
+                keys.remove(key);
+            }
         }
-        return words;
+        return intersections;
     }
+
+
 
 
     /**
      *
-     * @param text
+     * @param text Text from article
      * @return keyWords Returns all word
      */
-    private ArrayList<String> getkeyWords(String text){
+    private ArrayList<KeyWord> getkeyWords(String text){
         HashMap<String,Integer> keyWords = new HashMap<>();
-        ArrayList<String> topKeyWord;
-        ArrayList<String> textWords = split_words(text);
+        ArrayList<KeyWord> topKeyWord;
+        ArrayList<String> textWords = TF.split_words(text);
 
         for (String word : textWords) {
-           if (!MainActivity.IgnoreWordTrie.search(word)){
+           if (!MainActivity.IgnoreWordSet.contains(word)){
                if(!keyWords.containsKey(word)){
                    keyWords.put(word,1);
                    // if the current word is not ignored
@@ -158,12 +256,14 @@ class ThreadScrapeResult {
         }
 
         topKeyWord = sortMap(keyWords);
-
-
         return topKeyWord;
     }
 
-    private ArrayList<String> sortMap(final HashMap<String,Integer> allKeywords){
+    private ArrayList<String> getTitleWords(String searchTerm){
+        return TF.split_words(searchTerm);
+    }
+
+    private ArrayList<KeyWord> sortMap(final HashMap<String,Integer> allKeywords){
         PriorityQueue<Word> p = new PriorityQueue<>();
 
         for(Map.Entry<String,Integer> entry : allKeywords.entrySet()){
@@ -175,9 +275,9 @@ class ThreadScrapeResult {
             }
         }
 
-        ArrayList<String> result = new ArrayList<>();
+        ArrayList<KeyWord> result = new ArrayList<>();
         while(p.size() > 0){
-            result.add(p.remove().word);
+            result.add(new KeyWord(p.remove().word,p.remove().freq));
         }
 
         return result;
@@ -186,18 +286,9 @@ class ThreadScrapeResult {
 
 }
 
-class Word implements Comparable<Word>{
-    String word;
-    int freq;
-
-    Word(String w, int f){
-        this.word = w;
-        this.freq = f;
-    }
 
 
-    @Override
-    public int compareTo(@NonNull Word o) {
-        return this.freq - o.freq;
-    }
-}
+
+
+
+
