@@ -8,7 +8,7 @@ import java.util.Comparator;
  * Created by edinj on 24/04/2017.
  */
 
-public class SentenceScore implements Comparable<SentenceScore>{
+class SentenceScore implements Comparable<SentenceScore>{
     private String sentence;
     private double score;
 
@@ -19,7 +19,7 @@ public class SentenceScore implements Comparable<SentenceScore>{
 
 
 
-    public String getSentence() {
+    String getSentence() {
         return sentence;
     }
 

@@ -6,7 +6,7 @@ import java.util.ArrayList;
  * Created by edinj on 24/04/2017.
  */
 
-public class ScoreDTO {
+class ScoreDTO {
     private ArrayList<String> sentence;
     private ArrayList<String> titleWords;
     private ArrayList<KeyWord> keyWords;
@@ -17,15 +17,15 @@ public class ScoreDTO {
         this.keyWords = keyWords;
     }
 
-    public ArrayList<KeyWord> getKeyWords() {
+    ArrayList<KeyWord> getKeyWords() {
         return keyWords;
     }
 
-    public ArrayList<String> getSentence() {
+    ArrayList<String> getSentence() {
         return sentence;
     }
 
-    public ArrayList<String> getTitleWords() {
+    ArrayList<String> getTitleWords() {
         return titleWords;
     }
 }

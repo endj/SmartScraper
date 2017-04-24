@@ -24,7 +24,6 @@ import java.util.concurrent.Future;
 * */
 public class ResultPage extends AppCompatActivity {
     private TextView showInput;
-    private ProgressDialog progressDialog;
 
     private static final String MESSAGE = "";
 
@@ -51,7 +50,7 @@ public class ResultPage extends AppCompatActivity {
      */
 
     void threadSearch(ArrayList result){
-        progressDialog = ProgressDialog.show(ResultPage.this, "", "Loading...");
+        ProgressDialog progressDialog = ProgressDialog.show(ResultPage.this, "", "Loading...");
 
         String Temp = result.toString();
         String set[] = Temp.split("\\s+");

@@ -29,7 +29,7 @@ class ThreadScrapeResult {
         this.searchTerm = searchTerm;
     }
 
-    public String getText() {
+    String getText() {
         return text;
     }
 
@@ -272,9 +272,9 @@ class ThreadScrapeResult {
 
         for(Map.Entry<String,Integer> entry : allKeywords.entrySet()){
             if(p.size() < 10){
-                p.add(new Word(entry.getKey(), entry.getValue()));
-            }else if(entry.getValue() > p.peek().freq){
-                p.remove();
+                    p.add(new Word(entry.getKey(), entry.getValue()));
+                }else if(entry.getValue() > p.peek().freq){
+                    p.remove();
                 p.add(new Word(entry.getKey(),entry.getValue()));
             }
         }
