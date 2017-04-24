@@ -35,6 +35,7 @@ class UrlRun implements Callable<ThreadScrapeResult> {
     @Override
     public ThreadScrapeResult call() throws Exception {
         StringBuilder text = new StringBuilder();
+        ThreadScrapeResult result;
         try{
             Document doc = Jsoup.connect(this.link).get();
             doc.select("noscript,script,style,.hidden").remove();
@@ -43,13 +44,15 @@ class UrlRun implements Callable<ThreadScrapeResult> {
             for(Element e : ps){
                 text.append(e.text());
             }
+            result = new ThreadScrapeResult(text.toString(), this.relevance, this.link);
+            result.Summarize();
+            return result;
+
         }catch (Throwable e){
             System.out.println("## FAIL ##");
             //e.printStackTrace();
         }
-
-        ThreadScrapeResult result = new ThreadScrapeResult(text.toString(), this.relevance, this.link);
-        result.Summarize();
+            result = new ThreadScrapeResult("searchFailed",0,"");
         return result;
     }
 }

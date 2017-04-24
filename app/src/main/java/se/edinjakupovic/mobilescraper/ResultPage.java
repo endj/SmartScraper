@@ -24,6 +24,8 @@ import java.util.concurrent.Future;
 * */
 public class ResultPage extends AppCompatActivity {
     private TextView showInput;
+    private ProgressDialog progressDialog;
+
     private static final String MESSAGE = "";
 
 
@@ -49,7 +51,7 @@ public class ResultPage extends AppCompatActivity {
      */
 
     void threadSearch(ArrayList result){
-
+        progressDialog = ProgressDialog.show(ResultPage.this, "", "Loading...");
 
         String Temp = result.toString();
         String set[] = Temp.split("\\s+");
@@ -62,7 +64,6 @@ public class ResultPage extends AppCompatActivity {
             callableTasks.add(new UrlRun(set[j],Double.parseDouble(set[j+1])));
         }
 
-       // System.out.println("number of threads: "+numOfTreads);
         ExecutorService executor = Executors.newFixedThreadPool(numOfTreads); // #of threads
         try {
             List<Future<ThreadScrapeResult>> futures = executor.invokeAll(callableTasks);
@@ -75,10 +76,14 @@ public class ResultPage extends AppCompatActivity {
         }
 
 
+        for (ThreadScrapeResult x: summaries) {
+            if(x.getText().length() > 20){
+                showInput.append(x.getText() + "\n\n");
 
-       // System.out.println("AAAAAAAAAAAAAAAAAAAAAA"+xd.get(3).getText());
-        //showInput.setText(xd.get(3).getText());
-
+            }
+            System.out.println("After tread: "+x.getText());
+        }
+        progressDialog.dismiss();
 
     }
 

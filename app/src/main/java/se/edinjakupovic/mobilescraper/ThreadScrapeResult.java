@@ -21,12 +21,17 @@ class ThreadScrapeResult {
     private String searchTerm;  // SearchTerm of the Search.
     private String text;        // All the text from the site
 
+
+
     ThreadScrapeResult(String text, double relevance, String searchTerm){
         this.relevance = relevance;
         this.text = text;
         this.searchTerm = searchTerm;
     }
 
+    public String getText() {
+        return text;
+    }
 
     private ArrayList<String> score(ScoreDTO S){
         ArrayList<String> words;
@@ -84,12 +89,12 @@ class ThreadScrapeResult {
     * Splits up the input text to sentences and assigns them a score based on
     * relevance. The n most relevant articles are returned based on input
     *
-    *   @return The most relevant sentences as a String
+    *
     *
     * */
 
 
-    String Summarize(){
+    void Summarize(){
         ArrayList<String> sentences;
         ArrayList<KeyWord> keywords;
         ArrayList<String> titleWords;
@@ -98,7 +103,7 @@ class ThreadScrapeResult {
         sentences = TF.split_sentences(this.text);
 
         if(sentences.size() <= 5){
-            return sentences.toString();
+            this.text = sentences.toString();
         }
 
         keywords = getkeyWords(this.text);
@@ -106,8 +111,7 @@ class ThreadScrapeResult {
 
         ScoreDTO summary = new ScoreDTO(sentences,titleWords,keywords);
         ranks = score(summary);
-        System.out.println(ranks.toString());
-        return "b";
+        this.text = ranks.toString();
     }
 
     private double titleScore(ArrayList<String> titlewords,ArrayList<String> sentence){
