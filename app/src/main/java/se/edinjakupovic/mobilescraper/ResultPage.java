@@ -3,13 +3,17 @@ package se.edinjakupovic.mobilescraper;
 import android.app.ProgressDialog;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.support.v4.media.MediaBrowserServiceCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import android.view.MotionEvent;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +37,7 @@ public class ResultPage extends AppCompatActivity {
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result_page);
 
@@ -42,8 +46,81 @@ public class ResultPage extends AppCompatActivity {
 
         new ParseUrl().execute(Result); // nonblocking
 
+       // sumList
+
+        sumList.setOnTouchListener(new View.OnTouchListener(){
+            private  float x1,y1,t1;
+            LinearLayout clicked;
+            TextView clicktex;
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
 
 
+                switch (event.getAction()) {
+
+                    case MotionEvent.ACTION_DOWN:
+
+                        x1 = event.getX();
+                        y1 = event.getY();
+                        t1 = System.currentTimeMillis();
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        float x2 = event.getX();
+                        float y2 = event.getY();
+                        float t2 = System.currentTimeMillis();
+
+
+                        System.out.println("t2"+t2+"t1"+t1);
+                        System.out.println("x1 ca"+x1 + "y1 "+y1 + " x2 "+ x2 + " y2 "+y2);
+                        if (x1 == x2 && y1 == y2 && (t2 - t1) < 100) {
+
+                            int ListPos = sumList.pointToPosition((int)x1,(int)y1);
+                            clicked = (LinearLayout) sumList.getChildAt(ListPos);
+                            if(clicked != null) {
+                                clicktex =(TextView) clicked.findViewById(R.id.row_id);
+                                if(clicktex.getMaxLines() == 1000){
+                                    clicktex.setMaxLines(5);
+                                }else {
+                                    clicktex.setMaxLines(1000);
+                                }
+                            }
+
+                            Toast.makeText(ResultPage.this, "Click", Toast.LENGTH_SHORT).show();
+                        } else if (x1 > x2) {
+                            int ListPos = sumList.pointToPosition((int)x1,(int)y1);
+                            clicked = (LinearLayout) sumList.getChildAt(ListPos);
+
+                            if(clicked != null) {clicktex =(TextView) clicked.findViewById(R.id.row_id);
+                                if(clicktex.getMaxLines() == 5){
+                                    clicked.setBackgroundColor(Color.parseColor("#b9f9b6"));
+                                }
+                            }
+
+                            Toast.makeText(ResultPage.this, "Left swipe", Toast.LENGTH_SHORT).show();
+                        } else if (x2 > x1) {
+
+                            int ListPos = sumList.pointToPosition((int)x1,(int)y1);
+                            clicked = (LinearLayout) sumList.getChildAt(ListPos);
+
+                            if(clicked != null) {clicktex =(TextView) clicked.findViewById(R.id.row_id);
+                                if(clicktex.getMaxLines() == 5){
+                                    clicked.setBackgroundColor(Color.parseColor("#f9bbb6"));
+                                }
+                            }
+
+                            Toast.makeText(ResultPage.this, "Right swipe", Toast.LENGTH_SHORT).show();
+                        }
+
+
+                        return true;
+                }
+
+                return false;
+            }
+        });
+
+
+        /*
         sumList.setOnItemClickListener(new AdapterView.OnItemClickListener(){
 
 
@@ -62,6 +139,7 @@ public class ResultPage extends AppCompatActivity {
                 }
             }
         });
+        */
     }
 
 
