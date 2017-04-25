@@ -69,7 +69,7 @@ class ThreadScrapeResult {
             if(i == summaries.size()){
                 return test;
             }else if(i < 5){
-                test.add(summaries.get(i).getSentence());
+                test.add(summaries.get(i).getSentence()+" ");
 
             }
         }

@@ -158,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
                 "en","du","ha","av","Det","så","om","mest","Här","samt","Så",
                 "här","nu","Har","Jag","jag","De","de","Nu","sitt","Och","hon","han",
                 "Vi","vi","träffar","berättar","se","än","på","På","ut","ta","En","en",
-                "få","när","För","ju","oss"};
+                "få","när","För","ju","oss","cookies"};
 
         HashSet<String> Ignore = new HashSet<>(IgnoreWord.length);
 

@@ -1,10 +1,14 @@
 package se.edinjakupovic.mobilescraper;
 
 import android.app.ProgressDialog;
-import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -23,9 +27,9 @@ import java.util.concurrent.Future;
 * @version 1.0
 * */
 public class ResultPage extends AppCompatActivity {
-    private TextView showInput;
-
-    private static final String MESSAGE = "";
+    private ListView sumList;
+    private ArrayList resultSummaries;
+    SummaryAdapter listAdapter;
 
 
     @Override
@@ -33,11 +37,35 @@ public class ResultPage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result_page);
 
-        showInput = (TextView) findViewById(R.id.textView);
         final String Result = getIntent().getStringExtra(MainActivity.MESSAGE); // SearchTerm fecteedtrough intent
-        showInput.setText("");
+        sumList = (ListView) findViewById(R.id.sumList);
+
         new ParseUrl().execute(Result); // nonblocking
+
+
+
+        sumList.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                LinearLayout t = (LinearLayout) view;
+                TextView text = (TextView) t.findViewById(R.id.row_id);
+
+                int lines = text.getMaxLines();
+                if(lines == 1000){
+                    text.setBackgroundColor(Color.parseColor("#ffffff"));
+                    text.setMaxLines(5);
+                }else{
+                    text.setBackgroundColor(Color.parseColor("#b9f9b6"));
+                    text.setMaxLines(1000);
+                }
+            }
+        });
     }
+
+
+
 
     /**
      * Creates a thread for each searchresult from google. Up
@@ -49,14 +77,12 @@ public class ResultPage extends AppCompatActivity {
      *
      */
 
-    void threadSearch(ArrayList result){
-        ProgressDialog progressDialog = ProgressDialog.show(ResultPage.this, "", "Loading...");
-
+    ArrayList<String> threadSearch(ArrayList result){
         String Temp = result.toString();
         String set[] = Temp.split("\\s+");
         int numOfTreads = set.length/2;
-        ArrayList<ThreadScrapeResult> summaries = new ArrayList<>();
-
+        ArrayList<ThreadScrapeResult> threadResult = new ArrayList<>();
+        ArrayList<String> threadSummeries = new ArrayList<>();
 
         List<Callable<ThreadScrapeResult>> callableTasks = new ArrayList<>();
         for(int i=0, j=0; j<set.length-1; i++,j+=2){
@@ -68,22 +94,19 @@ public class ResultPage extends AppCompatActivity {
             List<Future<ThreadScrapeResult>> futures = executor.invokeAll(callableTasks);
           //  System.out.println("Antal futures " +futures.size());
             for (Future futurex:futures) {
-                summaries.add((ThreadScrapeResult) futurex.get());
+                threadResult.add((ThreadScrapeResult) futurex.get());
             }
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
 
-
-        for (ThreadScrapeResult x: summaries) {
-            if(x.getText().length() > 20){
-                showInput.append(x.getText() + "\n\n");
+        for (ThreadScrapeResult x: threadResult) {
+            if(x.getText().length() > 100){
+                threadSummeries.add(x.getText());
 
             }
-            System.out.println("After tread: "+x.getText());
         }
-        progressDialog.dismiss();
-
+        return threadSummeries;
     }
 
 
@@ -113,29 +136,39 @@ public class ResultPage extends AppCompatActivity {
 
             links = UrlGet.getLinks(searchTerm);
             result = new DB().query(links,searchTerm);
-            return result; // echo from php
+            result = threadSearch(result);
+
+            return result;
         }
 
         @Override
         protected void onPostExecute(ArrayList result){
             pdLoading.dismiss();
-            if(result.toString().equalsIgnoreCase("error")){
-                    handleError("Search failed");
-            }else{
-               threadSearch(result);
-            }
+
+            System.out.println("AT POSTEXECUTE" + result.toString());
+            resultSummaries = result;
+
+            listAdapter = new SummaryAdapter(ResultPage.this, resultSummaries);
+            sumList.setAdapter(listAdapter);
+
+
         }
+
+
+
     }
 
 
-    /**
+
+    /*
      * Recivies and displayes a error on the MainActivity
     * @param result Gets an error message as a string
     * */
+    /*
     void handleError(String result){
         Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra(MESSAGE,result);
         startActivity(intent);
-    }
+    }*/
 
 }
