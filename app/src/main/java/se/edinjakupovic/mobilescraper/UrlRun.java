@@ -27,6 +27,10 @@ class UrlRun implements Callable<ThreadScrapeResult> {
         this.relevance = relevance;
     }
 
+    public String getLink() {
+        return link;
+    }
+
     /**
     *   Function ran by each thread with input this.link
     * @return result Creates and return a ThreadScrapeResult
@@ -44,7 +48,7 @@ class UrlRun implements Callable<ThreadScrapeResult> {
             for(Element e : ps){
                 text.append(e.text());
             }
-            result = new ThreadScrapeResult(text.toString(), this.relevance, this.link);
+            result = new ThreadScrapeResult(text.toString(),this.link,this.relevance); // website text,urllink, relevance
             result.Summarize();
             return result;
 
@@ -52,7 +56,7 @@ class UrlRun implements Callable<ThreadScrapeResult> {
             System.out.println("## FAIL ##");
             //e.printStackTrace();
         }
-            result = new ThreadScrapeResult("searchFailed",0,"");
+            result = new ThreadScrapeResult("searchFailed","",0);
         return result;
     }
 }

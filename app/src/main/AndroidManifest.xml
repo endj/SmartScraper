@@ -21,6 +21,8 @@
         </activity>
         <activity android:name=".ResultPage"
             android:configChanges="orientation|screenSize"></activity>
+        <activity android:name=".FinalResultPage"
+            android:configChanges="orientation|screenSize"></activity>
     </application>
 
 </manifest>

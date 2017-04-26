@@ -1,9 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFF">
 
+
+    <TextView
+        android:id="@+id/urlsource"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:autoLink="web"
+        android:layout_below="@+id/row_id"
+        android:text="TextView"
+        android:background="#dae3f290"/>
 
     <TextView
         android:id="@+id/row_id"
@@ -11,4 +21,4 @@
         android:layout_height="match_parent"
         android:maxLines="5"/>
 
-</LinearLayout>
+</RelativeLayout>

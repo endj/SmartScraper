@@ -16,11 +16,11 @@ import java.util.List;
  * Created by edinj on 25/04/2017.
  */
 
-public class SummaryAdapter extends ArrayAdapter<String> {
+public class SummaryAdapter extends ArrayAdapter<UrlSummaryDTO> {
     private final Context context;
-    private final ArrayList<String> summaries;
+    private final ArrayList<UrlSummaryDTO> summaries;
 
-    public SummaryAdapter(Context context, ArrayList<String> summaries){
+    public SummaryAdapter(Context context, ArrayList<UrlSummaryDTO> summaries){
         super(context, R.layout.summary_item,summaries);
         this.context = context;
         this.summaries = summaries;
@@ -37,28 +37,15 @@ public class SummaryAdapter extends ArrayAdapter<String> {
         }
 
 
-        String summary = summaries.get(position);
+        UrlSummaryDTO summary = summaries.get(position);
         if(summary != null){
             TextView x = (TextView) v.findViewById(R.id.row_id);
-            x.setText(summary);
+            TextView y = (TextView) v.findViewById(R.id.urlsource);
+            x.setText(summary.getSummary());
+            y.setText("source: "+ summary.getUrl());
         }
 
-       // TextView text = (TextView) row.findViewById(R.id.sumList);
 
         return v;
-
     }
-
-    /*
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent){
-
-        String text = getItem(position);
-        if(convertView == null){
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.summary_item,parent,false);
-        }
-
-        return convertView;
-    }*/
-
 }

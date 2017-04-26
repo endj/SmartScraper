@@ -36,12 +36,12 @@ public class MainActivity extends AppCompatActivity {
         IgnoreWordSet = initIgnoreSet();
         setContentView(R.layout.activity_main);
 
-
+/*
         String errorMsg = fetchResult();
         TextView error = (TextView) findViewById(R.id.errormessage);
         if(errorMsg != null){
             error.setText(errorMsg);
-        }
+        }*/
 
         final EditText input = (EditText) findViewById(R.id.input); // Fiends the search bar
         Button htmlSearch = (Button) findViewById(R.id.htmlBtn); // Search btn

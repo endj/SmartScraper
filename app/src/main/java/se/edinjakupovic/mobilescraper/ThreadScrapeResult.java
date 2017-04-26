@@ -17,19 +17,28 @@ import java.util.PriorityQueue;
  *
  */
 class ThreadScrapeResult {
+    private String text;// All the text from the site before scraped
+    private String url;  // SearchTerm of the Search.
     private double relevance; // relevance of the URL
-    private String searchTerm;  // SearchTerm of the Search.
-    private String text;        // All the text from the site
 
 
 
-    ThreadScrapeResult(String text, double relevance, String searchTerm){
+
+    ThreadScrapeResult(String text,String url, double relevance){
         this.relevance = relevance;
         this.text = text;
-        this.searchTerm = searchTerm;
+        this.url = url;
     }
 
-    String getText() {
+    public String getUrl() {
+        return url;
+    }
+
+    public double getRelevance() {
+        return relevance;
+    }
+
+    public String getText() {
         return text;
     }
 
@@ -64,23 +73,16 @@ class ThreadScrapeResult {
 
         }
         Collections.sort(summaries);
-        ArrayList<String> test = new ArrayList<>();
+        ArrayList<String> summaryText = new ArrayList<>();
         for (int i=0;i<summaries.size();i++){
             if(i == summaries.size()){
-                return test;
+                return summaryText;
             }else if(i < 5){
-                test.add(summaries.get(i).getSentence()+" ");
+                summaryText.add(summaries.get(i).getSentence()+" ");
 
             }
         }
-        /*
-        int j=0;
-        while (!summaries.isEmpty() || j < 5){
-            j++;
-            test.add(summaries.get(j).getSentence());
-        }*/
-
-        return test;
+        return summaryText;
     }
 
 
@@ -107,11 +109,12 @@ class ThreadScrapeResult {
         }
 
         keywords = getkeyWords(this.text);
-        titleWords = getTitleWords(this.searchTerm);
+        titleWords = getTitleWords(this.url);
 
         ScoreDTO summary = new ScoreDTO(sentences,titleWords,keywords);
         ranks = score(summary);
         this.text = ranks.toString();
+
     }
 
     private double titleScore(ArrayList<String> titlewords,ArrayList<String> sentence){

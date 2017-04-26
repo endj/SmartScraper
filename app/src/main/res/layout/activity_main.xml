@@ -19,13 +19,13 @@
         android:inputType="textPersonName"
         android:hint="@string/inputEdit"
         android:ems="10"
-        android:layout_marginTop="12dp"
         android:background="@drawable/bordercolor"
         android:id="@+id/input"
         android:padding="11dp"
-        android:layout_alignParentTop="true"
+        android:layout_above="@+id/htmlBtn"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="23dp" />
 
     <Button
         android:text="@string/searchBtn"
@@ -34,9 +34,9 @@
         android:background="@drawable/bordercolor"
         android:textAllCaps="false"
         android:id="@+id/htmlBtn"
-        android:layout_below="@+id/input"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="18dp" />
+        android:layout_marginBottom="236dp" />
 
     <TextView
         android:layout_width="wrap_content"
