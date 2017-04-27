@@ -3,8 +3,11 @@ package se.edinjakupovic.mobilescraper.DTOs;
 import android.support.annotation.NonNull;
 
 /**
- * Created by edinj on 26/04/2017.
- */
+ * UrlSummaryDTO - Data transfer Object used at the SummaryAdapter to sort and display results
+ * @see se.edinjakupovic.mobilescraper.ListHandling.SummaryAdapter
+ * @author Edin Jakupovic
+ * @version 1.0
+ * */
 
 public class UrlSummaryDTO implements Comparable<UrlSummaryDTO> {
     private String summary;

@@ -15,8 +15,10 @@ import se.edinjakupovic.mobilescraper.DTOs.UrlSummaryDTO;
 import se.edinjakupovic.mobilescraper.R;
 
 /**
- * Created by edinj on 25/04/2017.
- */
+ * SummaryAdapter.java - Custom Adapter for displaying summaries
+ * @author Edin Jakupovic
+ * @version 1.0
+ * */
 
 public class SummaryAdapter extends ArrayAdapter<UrlSummaryDTO> {
     private final Context context;

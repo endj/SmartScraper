@@ -1,8 +1,11 @@
 package se.edinjakupovic.mobilescraper.DTOs;
 
 /**
- * Created by edinj on 27/04/2017.
- */
+ * RelevanceUpdateDTO.java - Data transfer object for passing to UppdateRelevancys class
+ * @see se.edinjakupovic.mobilescraper.DatabaseQueries.UppdateRelevancys
+ * @author Edin Jakupovic
+ * @version 1.0
+ * */
 
 public class RelevanceUpdateDTO {
     private String url;

@@ -1,7 +1,10 @@
 package se.edinjakupovic.mobilescraper.DTOs;
 
 /**
- * Created by edinj on 24/04/2017.
+ * KeyScoreDTO.java - Data transfer object for dbs fucntion
+ * @see se.edinjakupovic.mobilescraper.WebScraping.ThreadScrapeResult
+ * @author Edin Jakupovic
+ * @version 1.0
  */
 
 public class KeyScoreDTO {

@@ -5,7 +5,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Creat ed by edinj on 24/04/2017.
+ * RegexFunctions.java - Class containing some common string splits and so on.
+ * @author Edin Jakupovic
+ * @version 1.0
  */
 
 class RegexFunctions {

@@ -19,7 +19,9 @@ import java.util.HashMap;
 import se.edinjakupovic.mobilescraper.DTOs.RelevanceUpdateDTO;
 
 /**
- * Create d by edinj on 26/04/2017.
+ * UppdateRelevancys.java - AsyncTask that handles uppdating relevances after user swipes
+ * @author Edin Jakupovic
+ * @version 1.0
  */
 
 public class UppdateRelevancys extends AsyncTask<String, Void, Void> {
@@ -46,7 +48,13 @@ public class UppdateRelevancys extends AsyncTask<String, Void, Void> {
     }
 
 
-
+    /**
+     *
+     * Sends a POST request to the server with information
+     * that is interpreted on the server to update the
+     * relevancy in the database
+     *
+     */
     private void queryResults(){
         HttpURLConnection con = null;
         URL url;
@@ -67,21 +75,21 @@ public class UppdateRelevancys extends AsyncTask<String, Void, Void> {
 
             Uri.Builder builder = new Uri.Builder().appendQueryParameter("searchTerm",this.searchTerm);
 
-            if(!upvote.isEmpty()){  // if somethings been upvoted
+            if(!upvote.isEmpty()){
                 int upvoteSize = upvote.size();
-                builder.appendQueryParameter("upvoteSize",upvoteSize+""); // pass ammount to query
+                builder.appendQueryParameter("upvoteSize",upvoteSize+"");
                 for(int i=0; i<upvoteSize;i++){
                     builder.appendQueryParameter("upvoteURL"+i,upvote.get(i).getUrl());
-                    builder.appendQueryParameter("upvoteDomain"+i,upvote.get(i).getDomain());// how many upvotes
+                    builder.appendQueryParameter("upvoteDomain"+i,upvote.get(i).getDomain());
                 }
             }else{
-                builder.appendQueryParameter("upvoteSize",0+""); // no upvotes
+                builder.appendQueryParameter("upvoteSize",0+"");
             }
 
 
-            if(!downvote.isEmpty()){ // somehting downvoted
+            if(!downvote.isEmpty()){
                 int downvoteSize = downvote.size();
-                builder.appendQueryParameter("downvoteSize",downvoteSize+""); // how many
+                builder.appendQueryParameter("downvoteSize",downvoteSize+"");
                 for (int i=0;i<downvoteSize;i++){
                     builder.appendQueryParameter("downvoteURL"+i,downvote.get(i).getUrl());
                     builder.appendQueryParameter("downvoteDomain"+i,downvote.get(i).getDomain());
@@ -114,12 +122,10 @@ public class UppdateRelevancys extends AsyncTask<String, Void, Void> {
                     InputStream input = con.getInputStream();
                     BufferedReader reader = new BufferedReader(new InputStreamReader(input));
                     String line;
-                        Log.d("At CONNECTION"," AINBOIEDNHOINADIHG");
                     while((line = reader.readLine())!=null){
                         Result.add(line);
                     }
 
-                    Log.d("a",Result.toString()+"");
                 }else{
                 }
             }catch(IOException e2){
@@ -135,6 +141,15 @@ public class UppdateRelevancys extends AsyncTask<String, Void, Void> {
         }
 
     }
+
+    /**
+     * Splits upp results into two arraylist based
+     * on wherever the user finds the result relevant
+     * or irelevant
+     *
+     * @param map
+     *
+     */
 
     private void setRelevanceArray(HashMap<String, RelevanceUpdateDTO> map) {
         for (RelevanceUpdateDTO word : map.values()) {

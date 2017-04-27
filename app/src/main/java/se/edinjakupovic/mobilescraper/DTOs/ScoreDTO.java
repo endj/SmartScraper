@@ -3,8 +3,11 @@ package se.edinjakupovic.mobilescraper.DTOs;
 import java.util.ArrayList;
 
 /**
- * Created by edinj on 24/04/2017.
- */
+ * ScoreDTO.java - Class for computing most relevant summaries
+ * @see se.edinjakupovic.mobilescraper.WebScraping.ThreadScrapeResult
+ * @author Edin Jakupovic
+ * @version 1.0
+ * */
 
 public class ScoreDTO {
     private ArrayList<String> sentence;

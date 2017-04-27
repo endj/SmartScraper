@@ -16,7 +16,7 @@ import java.util.ArrayList;
 
 
 /**
- * DB.java - A class that handles all database queries
+ * QuerySearch.java - A class that handles all database queries
  * @author Edin Jakupovic
  * @version 1.0
  *
@@ -25,9 +25,9 @@ import java.util.ArrayList;
 
 
 
-public class DB {
+public class QuerySearch {
 
-    public DB(){}
+    public QuerySearch(){}
 
 
     /**

@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -17,21 +18,14 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import se.edinjakupovic.mobilescraper.DTOs.RelevanceUpdateDTO;
-import se.edinjakupovic.mobilescraper.DatabaseQueries.DB;
+import se.edinjakupovic.mobilescraper.DatabaseQueries.QuerySearch;
 import se.edinjakupovic.mobilescraper.R;
 import se.edinjakupovic.mobilescraper.ListHandling.SummaryAdapter;
-import se.edinjakupovic.mobilescraper.WebScraping.ThreadScrapeResult;
 import se.edinjakupovic.mobilescraper.DatabaseQueries.UppdateRelevancys;
+import se.edinjakupovic.mobilescraper.WebScraping.ThreadSearch;
 import se.edinjakupovic.mobilescraper.WebScraping.UrlGet;
-import se.edinjakupovic.mobilescraper.WebScraping.UrlRun;
 import se.edinjakupovic.mobilescraper.DTOs.UrlSummaryDTO;
 
 /**
@@ -68,6 +62,11 @@ public class ResultPage extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(!swipeTracker.isEmpty()){
+                    for (RelevanceUpdateDTO x: swipeTracker.values()) {
+                        if(x.getRelevance() == 1 && x.getSummaryText() != null){
+                            passToResult += x.getSummaryText();
+                        }
+                    }
                     new UppdateRelevancys(swipeTracker,searchTerm).execute();
                     toResultPage();
                 }
@@ -83,6 +82,12 @@ public class ResultPage extends AppCompatActivity {
 
         new ParseUrl().execute(searchTerm); // nonblocking
 
+
+        /*
+         * Used to detect if a user is swiping left/right or clicking
+         * Updates which values to update in the database when swiping
+         * Changes the item which is touched on ACTION_DOWN
+         */
         sumList.setOnTouchListener(new View.OnTouchListener(){
             private  float x1,y1,t1;
             private String DomainUrl;
@@ -105,6 +110,7 @@ public class ResultPage extends AppCompatActivity {
                         float t2 = System.currentTimeMillis();
 
                         if (x1 == x2 && y1 == y2 && (t2 - t1) < 100) {
+                            Log.d("CLICK","Swipe DETECTED");
 
                             int firstPosition = sumList.getFirstVisiblePosition();
                             int ListPos = sumList.pointToPosition((int)x1,(int)y1);
@@ -121,16 +127,21 @@ public class ResultPage extends AppCompatActivity {
                             }
 
                         } else if (x1 > x2+150) {
+                            Log.d("Left","Swipe DETECTED");
 
                             int firstPosition = sumList.getFirstVisiblePosition();
                             int ListPos = sumList.pointToPosition((int)x1,(int)y1);
                             int childPosition = ListPos -firstPosition;
 
-                            clicked = (RelativeLayout) sumList.getChildAt(childPosition); //swipe left remove
-                            urlTV = (TextView) clicked.findViewById(R.id.urlsource);
+                            try{
+                                clicked = (RelativeLayout) sumList.getChildAt(childPosition); //swipe left remove
+                                urlTV = (TextView) clicked.findViewById(R.id.urlsource);
+                            }catch (Exception e){
+
+                            }
 
                             if(clicked != null) {clicktex =(TextView) clicked.findViewById(R.id.row_id);
-                                if(clicktex.getMaxLines() == 5){
+                                if(clicktex.getMaxLines() == 5 && urlTV != null){
                                     Url = urlTV.getText().toString().substring(8);
                                     DomainUrl = UrlGet.getSingleDomain(Url);
                                     removeFromMap(clicktex,DomainUrl,Url);
@@ -139,6 +150,7 @@ public class ResultPage extends AppCompatActivity {
                             }
 
                         } else if (x2 > x1+150) {
+                            Log.d("Right","Swipe DETECTED");
 
                             int firstPosition = sumList.getFirstVisiblePosition();
                             int ListPos = sumList.pointToPosition((int)x1,(int)y1);
@@ -164,50 +176,11 @@ public class ResultPage extends AppCompatActivity {
         });
     }
 
-    /**
-     * Creates a thread for each searchresult from google. Up
-     * to 10 threads. An ExecutorService collects the ThreadScrapeResult
-     * from each thread. The result is sorted by relevance and displayed to ui
-     *
-     * @param result Contains the string returned from the DB @see DB
-     *
-     *
-     */
 
 
 
 
-    ArrayList<UrlSummaryDTO> threadSearch(ArrayList result){
-        String Temp = result.toString();
-        String set[] = Temp.split("\\s+");
-        int numOfTreads = set.length/2;
-        ArrayList<ThreadScrapeResult> threadResult = new ArrayList<>();
-        ArrayList<UrlSummaryDTO> threadSummeries = new ArrayList<>();
 
-        List<Callable<ThreadScrapeResult>> callableTasks = new ArrayList<>();
-        for(int i=0, j=0; j<set.length-1; i++,j+=2){
-            callableTasks.add(new UrlRun(set[j],Double.parseDouble(set[j+1]))); // (url , relevance)
-        }
-
-        ExecutorService executor = Executors.newFixedThreadPool(numOfTreads); // #of threads
-        try {
-            List<Future<ThreadScrapeResult>> futures = executor.invokeAll(callableTasks);
-          //  System.out.println("Antal futures " +futures.size());
-            for (Future futurex:futures) {
-                threadResult.add((ThreadScrapeResult) futurex.get());
-            }
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-
-        for (ThreadScrapeResult x: threadResult) {
-            if(x.getText().length() > 100){
-                threadSummeries.add(new UrlSummaryDTO(x.getText(),x.getUrl(),x.getRelevance()));
-
-            }
-        }
-        return threadSummeries;
-    }
 
     /**
      * Performs the initial search to google and starts the
@@ -236,9 +209,9 @@ public class ResultPage extends AppCompatActivity {
 
             links = UrlGet.getLinks(searchTerm);  // Returns links full url
             domains = UrlGet.getDomain(links);
-            result = new DB().query(links,searchTerm,domains);
+            result = new QuerySearch().query(links,searchTerm,domains);
 
-            sumResult = threadSearch(result);
+            sumResult = ThreadSearch.threadSearch(result);
 
             return sumResult;
         }
@@ -253,13 +226,30 @@ public class ResultPage extends AppCompatActivity {
     }
 
 
-
+    /**
+     * When a user swipes right, adds or uppdates the corresponding
+     * field in the hashmap to object.relevance to 1 for relevant, 0
+     * for irrelevant
+     *
+     * @param input Textview where text is found
+     * @param DomainUrl Domain of the listview item url
+     * @param Url Url of the listview item
+     */
     void addToMap(TextView input,String DomainUrl,String Url){
         if(input != null){
             String text = input.getText().toString(); //contains summary
             swipeTracker.put(DomainUrl,new RelevanceUpdateDTO(Url,DomainUrl,text,1));
         }
     }
+
+    /**
+     * When a user swipes left, adds or updates the corresponding
+     * field in the hashmap to object.relevance to 0 for irrelevant, 1
+     * for relevant
+     * @param input Textview where text is found
+     * @param DomainUrl Domain of the listview item url
+     * @param Url Url of the listview item
+     */
 
     void removeFromMap(TextView input,String DomainUrl,String Url){
         if(input != null){
@@ -274,17 +264,26 @@ public class ResultPage extends AppCompatActivity {
         return input;
     }
 
+    /**
+     * When newSearch button is pressed, goes back to newSearch
+     */
+
     void newSearch(){
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
 
+    /**
+     * Puts the text which user deems relevant and sends it
+     * to the FinalResultPage activity view. If nothing is
+     * deemed relevant -> does nothing(grayed out?)
+     */
+
     void toResultPage(){
-
-
-
         Intent intent = new Intent(this,FinalResultPage.class);
-        intent.putExtra("map",passToResult);
-        startActivity(intent);
+        if(passToResult != null){
+            intent.putExtra("map",passToResult);
+            startActivity(intent);
+        }
     }
 }

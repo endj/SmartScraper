@@ -64,9 +64,12 @@ public class UrlGet {
         return matches;
     }
 
+    /**
+     * Returns the domain of a single Url
+     * @param input Single url
+     * @return domain of the url  www.example.com/abc/file.abc -> www.example.com
+     */
     public static String getSingleDomain(String input){
-
-
         try{
             URL url = new URL(input);
             input = url.getHost();

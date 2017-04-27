@@ -3,8 +3,12 @@ package se.edinjakupovic.mobilescraper.DTOs;
 import android.support.annotation.NonNull;
 
 /**
- * Created by edinj on 24/04/2017.
- */
+ *
+ * WordDTO.java - Data transfer Object used to sort KeyWords
+ * @see se.edinjakupovic.mobilescraper.WebScraping.ThreadScrapeResult
+ * @author Edin Jakupovic
+ * @version 1.0
+ * */
 
 public class WordDTO implements Comparable<WordDTO>{
     private String word;

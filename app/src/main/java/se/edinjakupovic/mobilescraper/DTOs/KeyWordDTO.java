@@ -1,8 +1,12 @@
 package se.edinjakupovic.mobilescraper.DTOs;
 
 /**
- * Created by edinj on 24/04/2017.
- */
+ *
+ * KeyWordDTO.java - Data transfer object for  computing keyWordDensity and sentence intersection
+ * @see se.edinjakupovic.mobilescraper.WebScraping.ThreadScrapeResult
+ * @author Edin Jakupovic
+ * @version 1.0
+ * */
 
 public class KeyWordDTO {
     private String word;
