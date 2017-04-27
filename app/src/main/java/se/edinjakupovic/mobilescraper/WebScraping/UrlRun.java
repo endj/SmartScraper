@@ -1,4 +1,4 @@
-package se.edinjakupovic.mobilescraper;
+package se.edinjakupovic.mobilescraper.WebScraping;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -17,12 +17,12 @@ import java.util.concurrent.Callable;
  * @version 1.0
  */
 
-class UrlRun implements Callable<ThreadScrapeResult> {
+public class UrlRun implements Callable<ThreadScrapeResult> {
     private String link;
     private double relevance;
 
 
-    UrlRun(String link,double relevance) {
+    public UrlRun(String link, double relevance) {
         this.link = link;
         this.relevance = relevance;
     }

@@ -1,4 +1,4 @@
-package se.edinjakupovic.mobilescraper;
+package se.edinjakupovic.mobilescraper.WebScraping;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -17,7 +17,7 @@ import java.util.ArrayList;
  * @version 1.0
  */
 
-class UrlGet {
+public class UrlGet {
 
 
     /**
@@ -26,7 +26,7 @@ class UrlGet {
     *   @param searchTerm Input is gotten from the search screen
     *   @return Returns the most popular links as an ArrayList
     * */
-    static ArrayList<String> getLinks(String searchTerm){ // Goes to google, fetches top links
+    public static ArrayList<String> getLinks(String searchTerm){ // Goes to google, fetches top links
         ArrayList<String> links = new ArrayList<>();
         try{
             Document doc = Jsoup.connect("https://www.google.se/search?q="+searchTerm).get();
@@ -50,7 +50,7 @@ class UrlGet {
     *   @return matches  Returns domains as ArrayList
     *
     * */
-    static ArrayList<String> getDomain(ArrayList input){
+    public static ArrayList<String> getDomain(ArrayList input){
         ArrayList<String> matches = new ArrayList<>();
 
         for(int i=0;i < input.size();i++){
@@ -62,5 +62,17 @@ class UrlGet {
             }
         }
         return matches;
+    }
+
+    public static String getSingleDomain(String input){
+
+
+        try{
+            URL url = new URL(input);
+            input = url.getHost();
+        }catch (IOException e){
+            throw new RuntimeException(e);
+        }
+        return input;
     }
 }

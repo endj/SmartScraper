@@ -1,4 +1,4 @@
-package se.edinjakupovic.mobilescraper;
+package se.edinjakupovic.mobilescraper.ViewActivities;
 
 
 import android.content.Intent;
@@ -11,6 +11,9 @@ import android.widget.TextView;
 
 import java.util.Collections;
 import java.util.HashSet;
+
+import se.edinjakupovic.mobilescraper.R;
+import se.edinjakupovic.mobilescraper.WebScraping.ThreadScrapeResult;
 
 /**
 * MainActivity.java - Start activity for the class.
@@ -36,12 +39,12 @@ public class MainActivity extends AppCompatActivity {
         IgnoreWordSet = initIgnoreSet();
         setContentView(R.layout.activity_main);
 
-/*
+
         String errorMsg = fetchResult();
         TextView error = (TextView) findViewById(R.id.errormessage);
         if(errorMsg != null){
             error.setText(errorMsg);
-        }*/
+        }
 
         final EditText input = (EditText) findViewById(R.id.input); // Fiends the search bar
         Button htmlSearch = (Button) findViewById(R.id.htmlBtn); // Search btn

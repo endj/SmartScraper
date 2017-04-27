@@ -11,7 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
 
-        <activity android:name=".MainActivity"
+        <activity android:name=".ViewActivities.MainActivity"
             android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -19,9 +19,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ResultPage"
+        <activity android:name=".ViewActivities.ResultPage"
             android:configChanges="orientation|screenSize"></activity>
-        <activity android:name=".FinalResultPage"
+        <activity android:name=".ViewActivities.FinalResultPage"
             android:configChanges="orientation|screenSize"></activity>
     </application>
 

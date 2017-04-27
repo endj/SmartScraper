@@ -1,30 +1,28 @@
-package se.edinjakupovic.mobilescraper;
+package se.edinjakupovic.mobilescraper.DTOs;
 
 import android.support.annotation.NonNull;
-
-import java.util.Comparator;
 
 /**
  * Created by edinj on 24/04/2017.
  */
 
-class SentenceScore implements Comparable<SentenceScore>{
+public class SentenceScoreDTO implements Comparable<SentenceScoreDTO>{
     private String sentence;
     private double score;
 
-    SentenceScore(String sentence,double score){
+    public SentenceScoreDTO(String sentence, double score){
         this.sentence=sentence;
         this.score=score;
     }
 
 
 
-    String getSentence() {
+    public String getSentence() {
         return sentence;
     }
 
     @Override
-    public int compareTo(@NonNull SentenceScore o) {
+    public int compareTo(@NonNull SentenceScoreDTO o) {
         return Double.compare(this.score, o.score);
     }
 }

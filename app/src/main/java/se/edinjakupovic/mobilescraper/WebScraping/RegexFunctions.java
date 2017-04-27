@@ -1,17 +1,21 @@
-package se.edinjakupovic.mobilescraper;
+package se.edinjakupovic.mobilescraper.WebScraping;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by edinj on 24/04/2017.
+ * Creat ed by edinj on 24/04/2017.
  */
 
-class TF{
+class RegexFunctions {
+
+
+
 
     /**
      *   Splits a sentence to words [A-Za-z1-9_]
+     *
      *
      *   @param s A sentence from the ArrayList "sentences"
      *   @return words Returns an ArrayList of words

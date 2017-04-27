@@ -1,10 +1,12 @@
-package se.edinjakupovic.mobilescraper;
+package se.edinjakupovic.mobilescraper.DTOs;
+
+import android.support.annotation.NonNull;
 
 /**
  * Created by edinj on 26/04/2017.
  */
 
-public class UrlSummaryDTO {
+public class UrlSummaryDTO implements Comparable<UrlSummaryDTO> {
     private String summary;
     private String url;
     private double relevance;
@@ -25,5 +27,10 @@ public class UrlSummaryDTO {
 
     public double getRelevance() {
         return relevance;
+    }
+
+    @Override
+    public int compareTo(@NonNull UrlSummaryDTO o) {
+        return Double.compare(this.relevance, o.relevance);
     }
 }

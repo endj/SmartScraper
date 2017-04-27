@@ -9,7 +9,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="se.edinjakupovic.mobilescraper.MainActivity"
+    tools:context="se.edinjakupovic.mobilescraper.ViewActivities.MainActivity"
     android:background="@color/mainbackground">
 
 

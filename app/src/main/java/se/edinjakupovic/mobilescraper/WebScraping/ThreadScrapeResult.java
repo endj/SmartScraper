@@ -1,10 +1,17 @@
-package se.edinjakupovic.mobilescraper;
+package se.edinjakupovic.mobilescraper.WebScraping;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.PriorityQueue;
+
+import se.edinjakupovic.mobilescraper.DTOs.KeyScoreDTO;
+import se.edinjakupovic.mobilescraper.DTOs.KeyWordDTO;
+import se.edinjakupovic.mobilescraper.DTOs.ScoreDTO;
+import se.edinjakupovic.mobilescraper.DTOs.SentenceScoreDTO;
+import se.edinjakupovic.mobilescraper.DTOs.WordDTO;
+import se.edinjakupovic.mobilescraper.ViewActivities.MainActivity;
 
 
 /**
@@ -16,7 +23,7 @@ import java.util.PriorityQueue;
  * @version 1.0
  *
  */
-class ThreadScrapeResult {
+public class ThreadScrapeResult {
     private String text;// All the text from the site before scraped
     private String url;  // SearchTerm of the Search.
     private double relevance; // relevance of the URL
@@ -44,7 +51,7 @@ class ThreadScrapeResult {
 
     private ArrayList<String> score(ScoreDTO S){
         ArrayList<String> words;
-        ArrayList<SentenceScore> summaries = new ArrayList<>();
+        ArrayList<SentenceScoreDTO> summaries = new ArrayList<>();
 
         double sbs;
         double dbs;
@@ -58,7 +65,7 @@ class ThreadScrapeResult {
 
         for (String sentence: S.getSentence()) {
             counter++;
-            words = TF.split_words(sentence);
+            words = RegexFunctions.split_words(sentence);
             searchFeatureS = titleScore(S.getTitleWords(),words);
             sentenceLengthS = lengthScore(sentence);
             sentencePositionS = positionScore(sentencesLength,counter);
@@ -69,7 +76,7 @@ class ThreadScrapeResult {
             totalScore = (searchFeatureS*1.5+ frequency*2 +sentenceLengthS+
             sentencePositionS*1)/4;
 
-            summaries.add(new SentenceScore(sentence,totalScore));
+            summaries.add(new SentenceScoreDTO(sentence,totalScore));
 
         }
         Collections.sort(summaries);
@@ -98,11 +105,11 @@ class ThreadScrapeResult {
 
     void Summarize(){
         ArrayList<String> sentences;
-        ArrayList<KeyWord> keywords;
+        ArrayList<KeyWordDTO> keywords;
         ArrayList<String> titleWords;
         ArrayList<String> ranks;
 
-        sentences = TF.split_sentences(this.text);
+        sentences = RegexFunctions.split_sentences(this.text);
 
         if(sentences.size() <= 5){
             this.text = sentences.toString();
@@ -158,52 +165,46 @@ class ThreadScrapeResult {
         return 1-Math.abs(15-sentence.length())/15;
     }
 
-    private double keyWordDensity(String sentence, ArrayList<KeyWord> keywords){
+    private double keyWordDensity(String sentence, ArrayList<KeyWordDTO> keywords){
         int score = 0;
         if(sentence.length() == 0){
             return 0;
         }
-        ArrayList<String> words = TF.split_words(sentence);
+        ArrayList<String> words = RegexFunctions.split_words(sentence);
 
         for(int i=0;i<keywords.size();i++){
-            KeyWord current = keywords.get(i);
-            if(words.contains(current.word)){
+            KeyWordDTO current = keywords.get(i);
+            if(words.contains(current.getWord())){
                 keywords.remove(keywords.indexOf(current));
                 i--;
             }
 
         }
-        /*
-        for (KeyWord key: keywords) {
-            if(words.contains(key.word)){
-                score = score+1;
-                keywords.remove(key);
-            }
-        }*/
+
 
 
         return (1/Math.abs(words.size()) * score)/10;
     }
 
-    private int getKeyWordScore(ArrayList<KeyWord> keywords, String word){
-        for (KeyWord key: keywords) {
-            if(key.word.equals(word)){
-                return  key.score;
+    private int getKeyWordScore(ArrayList<KeyWordDTO> keywords, String word){
+        for (KeyWordDTO key: keywords) {
+            if(key.getWord().equals(word)){
+                return  key.getScore();
             }
         }
         return 0;
     }
 
-    private double dbs(String sentence, ArrayList<KeyWord> keywords){
-        ArrayList<KeyScore> first = new ArrayList<>();
-        ArrayList<KeyScore> second;
+    private double dbs(String sentence, ArrayList<KeyWordDTO> keywords){
+        ArrayList<KeyScoreDTO> first = new ArrayList<>();
+        ArrayList<KeyScoreDTO> second;
         double sum=0;
 
         if(sentence.length() == 0){
             return 0;
         }
         int score;
-        ArrayList<String> words = TF.split_words(sentence);
+        ArrayList<String> words = RegexFunctions.split_words(sentence);
 
         int i=0;
         for (String word: words) {
@@ -211,12 +212,12 @@ class ThreadScrapeResult {
             if(!MainActivity.IgnoreWordSet.contains(word)){
                 score = getKeyWordScore(keywords,word);
                 if(first.isEmpty()){
-                    first.add(new KeyScore(score,i));
+                    first.add(new KeyScoreDTO(score,i));
                 }else{
                     second = first;
-                    first.add(new KeyScore(score,i));
-                    int dif = first.get(0).score - second.get(0).score;
-                    sum += (first.get(1).score*second.get(1).score)/(Math.pow(dif,2));
+                    first.add(new KeyScoreDTO(score,i));
+                    int dif = first.get(0).getScore() - second.get(0).getScore();
+                    sum += (first.get(1).getScore()*second.get(1).getScore())/(Math.pow(dif,2));
                 }
             }
 
@@ -227,10 +228,10 @@ class ThreadScrapeResult {
     }
 
 
-    private int SentenceKeyIntersection(ArrayList<KeyWord> keys,ArrayList<String> words){
+    private int SentenceKeyIntersection(ArrayList<KeyWordDTO> keys, ArrayList<String> words){
         int intersections=0;
-        for(KeyWord key : keys){
-            if(words.contains(key.word)){
+        for(KeyWordDTO key : keys){
+            if(words.contains(key.getWord())){
                intersections++;
                 keys.remove(key);
             }
@@ -246,10 +247,10 @@ class ThreadScrapeResult {
      * @param text Text from article
      * @return keyWords Returns all word
      */
-    private ArrayList<KeyWord> getkeyWords(String text){
+    private ArrayList<KeyWordDTO> getkeyWords(String text){
         HashMap<String,Integer> keyWords = new HashMap<>();
-        ArrayList<KeyWord> topKeyWord;
-        ArrayList<String> textWords = TF.split_words(text);
+        ArrayList<KeyWordDTO> topKeyWord;
+        ArrayList<String> textWords = RegexFunctions.split_words(text);
 
         for (String word : textWords) {
            if (!MainActivity.IgnoreWordSet.contains(word)){
@@ -267,24 +268,24 @@ class ThreadScrapeResult {
     }
 
     private ArrayList<String> getTitleWords(String searchTerm){
-        return TF.split_words(searchTerm);
+        return RegexFunctions.split_words(searchTerm);
     }
 
-    private ArrayList<KeyWord> sortMap(final HashMap<String,Integer> allKeywords){
-        PriorityQueue<Word> p = new PriorityQueue<>();
+    private ArrayList<KeyWordDTO> sortMap(final HashMap<String,Integer> allKeywords){
+        PriorityQueue<WordDTO> p = new PriorityQueue<>();
 
         for(Map.Entry<String,Integer> entry : allKeywords.entrySet()){
             if(p.size() < 10){
-                    p.add(new Word(entry.getKey(), entry.getValue()));
-                }else if(entry.getValue() > p.peek().freq){
+                    p.add(new WordDTO(entry.getKey(), entry.getValue()));
+                }else if(entry.getValue() > p.peek().getFreq()){
                     p.remove();
-                p.add(new Word(entry.getKey(),entry.getValue()));
+                p.add(new WordDTO(entry.getKey(),entry.getValue()));
             }
         }
 
-        ArrayList<KeyWord> result = new ArrayList<>();
+        ArrayList<KeyWordDTO> result = new ArrayList<>();
         while(p.size() > 0){
-            result.add(new KeyWord(p.remove().word,p.remove().freq));
+            result.add(new KeyWordDTO(p.remove().getWord(),p.remove().getFreq()));
         }
 
         return result;

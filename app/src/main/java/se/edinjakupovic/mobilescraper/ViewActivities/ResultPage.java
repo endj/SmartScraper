@@ -1,4 +1,4 @@
-package se.edinjakupovic.mobilescraper;
+package se.edinjakupovic.mobilescraper.ViewActivities;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -10,13 +10,12 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import java.security.Key;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -24,6 +23,16 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+
+import se.edinjakupovic.mobilescraper.DTOs.RelevanceUpdateDTO;
+import se.edinjakupovic.mobilescraper.DatabaseQueries.DB;
+import se.edinjakupovic.mobilescraper.R;
+import se.edinjakupovic.mobilescraper.ListHandling.SummaryAdapter;
+import se.edinjakupovic.mobilescraper.WebScraping.ThreadScrapeResult;
+import se.edinjakupovic.mobilescraper.DatabaseQueries.UppdateRelevancys;
+import se.edinjakupovic.mobilescraper.WebScraping.UrlGet;
+import se.edinjakupovic.mobilescraper.WebScraping.UrlRun;
+import se.edinjakupovic.mobilescraper.DTOs.UrlSummaryDTO;
 
 /**
 * ResultPage.java - Page reached after a search is initiated.
@@ -34,8 +43,8 @@ import java.util.concurrent.Future;
 * */
 public class ResultPage extends AppCompatActivity {
     private ListView sumList;
-    private ArrayList<UrlSummaryDTO> resultSummaries;
-    private HashMap<String,KeyWord> swipeTracker = new HashMap<>();
+    private String searchTerm;
+    private HashMap<String,RelevanceUpdateDTO> swipeTracker = new HashMap<>();
     String passToResult;
     SummaryAdapter listAdapter;
 
@@ -58,23 +67,29 @@ public class ResultPage extends AppCompatActivity {
         showResultButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new UppdateRelevancys(swipeTracker).execute();
-                toResultPage();
+                if(!swipeTracker.isEmpty()){
+                    new UppdateRelevancys(swipeTracker,searchTerm).execute();
+                    toResultPage();
+                }
+
             }
         });
 
 
 
 
-        final String Result = getIntent().getStringExtra(MainActivity.MESSAGE); // SearchTerm fecteedtrough intent
+        searchTerm = getIntent().getStringExtra(MainActivity.MESSAGE); // SearchTerm fecteedtrough intent
         sumList = (ListView) findViewById(R.id.sumList);
 
-        new ParseUrl().execute(Result); // nonblocking
+        new ParseUrl().execute(searchTerm); // nonblocking
 
         sumList.setOnTouchListener(new View.OnTouchListener(){
             private  float x1,y1,t1;
+            private String DomainUrl;
+            private String Url;
             RelativeLayout clicked;
             TextView clicktex;
+            TextView urlTV;
             @Override
             public boolean onTouch(View v, MotionEvent event) {
 
@@ -112,9 +127,13 @@ public class ResultPage extends AppCompatActivity {
                             int childPosition = ListPos -firstPosition;
 
                             clicked = (RelativeLayout) sumList.getChildAt(childPosition); //swipe left remove
+                            urlTV = (TextView) clicked.findViewById(R.id.urlsource);
+
                             if(clicked != null) {clicktex =(TextView) clicked.findViewById(R.id.row_id);
                                 if(clicktex.getMaxLines() == 5){
-                                    removeFromMap(clicktex);
+                                    Url = urlTV.getText().toString().substring(8);
+                                    DomainUrl = UrlGet.getSingleDomain(Url);
+                                    removeFromMap(clicktex,DomainUrl,Url);
                                     clicked.setBackgroundColor(Color.parseColor("#f9bbb6"));
                                 }
                             }
@@ -127,9 +146,13 @@ public class ResultPage extends AppCompatActivity {
 
                             clicked = (RelativeLayout) sumList.getChildAt(childPosition); //swipe right add
 
-                            if(clicked != null) {clicktex =(TextView) clicked.findViewById(R.id.row_id);
+                            if(clicked != null) {
+                                clicktex =(TextView) clicked.findViewById(R.id.row_id);
+                                urlTV = (TextView) clicked.findViewById(R.id.urlsource);
                                 if(clicktex.getMaxLines() == 5){
-                                    addToMap(clicktex);
+                                    Url = urlTV.getText().toString().substring(8);
+                                    DomainUrl = UrlGet.getSingleDomain(Url);
+                                    addToMap(clicktex,DomainUrl,Url);
                                     clicked.setBackgroundColor(Color.parseColor("#b9f9b6"));
                                 }
                             }
@@ -206,12 +229,14 @@ public class ResultPage extends AppCompatActivity {
         @Override
         protected ArrayList<UrlSummaryDTO> doInBackground(String... strings){
             ArrayList<String> links;
+            ArrayList<String> domains;
             ArrayList<String> result;
             ArrayList<UrlSummaryDTO> sumResult;
             String searchTerm = strings[0];
 
-            links = UrlGet.getLinks(searchTerm);
-            result = new DB().query(links,searchTerm);
+            links = UrlGet.getLinks(searchTerm);  // Returns links full url
+            domains = UrlGet.getDomain(links);
+            result = new DB().query(links,searchTerm,domains);
 
             sumResult = threadSearch(result);
 
@@ -221,33 +246,33 @@ public class ResultPage extends AppCompatActivity {
         @Override
         protected void onPostExecute(ArrayList result){
             pdLoading.dismiss();
-            System.out.println("AT POSTEXECUTE" + result.toString());
-            resultSummaries = result;
 
-            listAdapter = new SummaryAdapter(ResultPage.this, resultSummaries);
+            listAdapter = new SummaryAdapter(ResultPage.this, sortResult(result));
             sumList.setAdapter(listAdapter);
         }
     }
 
 
 
-    void addToMap(TextView input){
+    void addToMap(TextView input,String DomainUrl,String Url){
         if(input != null){
-            String text = input.getText().toString();
-            String key = text.substring(1,15);
-                swipeTracker.put(key,new KeyWord(text,1));
+            String text = input.getText().toString(); //contains summary
+            swipeTracker.put(DomainUrl,new RelevanceUpdateDTO(Url,DomainUrl,text,1));
         }
     }
 
-    void removeFromMap(TextView input){
+    void removeFromMap(TextView input,String DomainUrl,String Url){
         if(input != null){
             String text = input.getText().toString();
-            String key = text.substring(1,15);
-            swipeTracker.put(key,new KeyWord(text,0));
+            swipeTracker.put(DomainUrl,new RelevanceUpdateDTO(Url,DomainUrl,text,0));
         }
 
     }
 
+    ArrayList<UrlSummaryDTO> sortResult(ArrayList<UrlSummaryDTO> input){
+        Collections.sort(input,Collections.<UrlSummaryDTO>reverseOrder());
+        return input;
+    }
 
     void newSearch(){
         Intent intent = new Intent(this, MainActivity.class);

@@ -1,4 +1,4 @@
-package se.edinjakupovic.mobilescraper;
+package se.edinjakupovic.mobilescraper.ListHandling;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -10,7 +10,9 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.List;
+
+import se.edinjakupovic.mobilescraper.DTOs.UrlSummaryDTO;
+import se.edinjakupovic.mobilescraper.R;
 
 /**
  * Created by edinj on 25/04/2017.

@@ -1,4 +1,4 @@
-package se.edinjakupovic.mobilescraper;
+package se.edinjakupovic.mobilescraper.DatabaseQueries;
 
 import android.net.Uri;
 import android.util.Log;
@@ -14,6 +14,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
+
 /**
  * DB.java - A class that handles all database queries
  * @author Edin Jakupovic
@@ -24,13 +25,9 @@ import java.util.ArrayList;
 
 
 
-class DB {
+public class DB {
 
-    DB(){}
-
-    private final int READ_TIMEOUT =5000;
-    private final int CONNECTION_TIMEOUT=5000;
-    private final String target = "http://192.168.10.208/kandidat/script.php?search=";
+    public DB(){}
 
 
     /**
@@ -45,11 +42,13 @@ class DB {
     *
     * */
 
-    ArrayList<String> query(ArrayList<String> links, String searchTerm){
+    public ArrayList<String> query(ArrayList<String> links, String searchTerm, ArrayList<String> domains){
         ArrayList<String> Result = new ArrayList<>();
-        ArrayList<String> domains;
         HttpURLConnection con;
         URL url;
+        int CONNECTION_TIMEOUT = 5000;
+        int READ_TIMEOUT = 5000;
+        String target = "http://192.168.10.208/kandidat/script.php?search=";
 
         try{
             url = new URL(target);
@@ -59,7 +58,7 @@ class DB {
             con.setReadTimeout(READ_TIMEOUT);
             con.setConnectTimeout(CONNECTION_TIMEOUT);
 
-            domains = UrlGet.getDomain(links);
+
 
             Uri.Builder builder = new Uri.Builder().appendQueryParameter("search",searchTerm);
             builder.appendQueryParameter("numOfLinks",links.size()+"");
