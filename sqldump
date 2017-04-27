@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 22, 2017 at 05:11 PM
+-- Generation Time: Apr 27, 2017 at 09:28 PM
 -- Server version: 10.1.13-MariaDB
 -- PHP Version: 5.6.23
 
@@ -32,36 +32,6 @@ CREATE TABLE `domain` (
   `numOfHits` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- --------------------------------------------------------
-
---
--- Table structure for table `search`
---
-
-CREATE TABLE `search` (
-  `relevance` int(11) NOT NULL,
-  `d_id` int(11) NOT NULL,
-  `s_id` int(11) NOT NULL,
-  `url` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `searchterm`
---
-
-CREATE TABLE `searchterm` (
-  `id` int(11) NOT NULL,
-  `term` varchar(255) NOT NULL,
-  `noOfSearches` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `searchterm`
---
-
-
 --
 -- Indexes for dumped tables
 --
@@ -74,20 +44,6 @@ ALTER TABLE `domain`
   ADD UNIQUE KEY `url` (`url`);
 
 --
--- Indexes for table `search`
---
-ALTER TABLE `search`
-  ADD PRIMARY KEY (`d_id`,`s_id`,`url`),
-  ADD KEY `s_id` (`s_id`);
-
---
--- Indexes for table `searchterm`
---
-ALTER TABLE `searchterm`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `term` (`term`);
-
---
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -95,23 +51,7 @@ ALTER TABLE `searchterm`
 -- AUTO_INCREMENT for table `domain`
 --
 ALTER TABLE `domain`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `searchterm`
---
-ALTER TABLE `searchterm`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
---
--- Constraints for dumped tables
---
-
---
--- Constraints for table `search`
---
-ALTER TABLE `search`
-  ADD CONSTRAINT `search_ibfk_1` FOREIGN KEY (`d_id`) REFERENCES `domain` (`id`),
-  ADD CONSTRAINT `search_ibfk_2` FOREIGN KEY (`s_id`) REFERENCES `searchterm` (`id`);
-
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4109;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
