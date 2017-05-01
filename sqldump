@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 22, 2017 at 05:11 PM
+-- Generation Time: Apr 27, 2017 at 09:30 PM
 -- Server version: 10.1.13-MariaDB
 -- PHP Version: 5.6.23
 
@@ -39,7 +39,7 @@ CREATE TABLE `domain` (
 --
 
 CREATE TABLE `search` (
-  `relevance` int(11) NOT NULL,
+  `relevance` decimal(5,2) NOT NULL,
   `d_id` int(11) NOT NULL,
   `s_id` int(11) NOT NULL,
   `url` varchar(255) NOT NULL
@@ -56,11 +56,6 @@ CREATE TABLE `searchterm` (
   `term` varchar(255) NOT NULL,
   `noOfSearches` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `searchterm`
---
-
 
 --
 -- Indexes for dumped tables
@@ -95,12 +90,12 @@ ALTER TABLE `searchterm`
 -- AUTO_INCREMENT for table `domain`
 --
 ALTER TABLE `domain`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4109;
 --
 -- AUTO_INCREMENT for table `searchterm`
 --
 ALTER TABLE `searchterm`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=430;
 --
 -- Constraints for dumped tables
 --
