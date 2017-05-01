@@ -23,7 +23,7 @@
         android:background="@drawable/bordercolor"
         android:id="@+id/input"
         android:padding="11dp"
-        android:layout_marginBottom="23dp"
+        android:layout_marginBottom="68dp"
         android:layout_above="@+id/htmlBtn"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
@@ -35,8 +35,7 @@
         android:background="@drawable/bordercolor"
         android:textAllCaps="false"
         android:id="@+id/htmlBtn"
-        android:layout_marginBottom="221dp"
-        android:layout_alignParentBottom="true"
+        android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
 
     <TextView

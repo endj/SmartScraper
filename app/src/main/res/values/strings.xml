@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MobileScraper</string>
+    <string name="app_name">SmartSearch</string>
     <string name="inputEdit">Search…</string>
     <string name="searchBtn">Search</string>
     <string name="action_settings">Settings</string>

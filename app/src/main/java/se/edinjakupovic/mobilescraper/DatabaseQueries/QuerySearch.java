@@ -48,7 +48,7 @@ public class QuerySearch {
         URL url;
         int CONNECTION_TIMEOUT = 5000;
         int READ_TIMEOUT = 5000;
-        String target = "http://192.168.10.208/kandidat/script.php?search=";
+        String target = "http://edinjakupovic.se/script.php?search=";
 
         try{
             url = new URL(target);
@@ -64,7 +64,6 @@ public class QuerySearch {
             builder.appendQueryParameter("numOfLinks",links.size()+"");
             for(int i=0;i<links.size();i++){
                 builder.appendQueryParameter("searchUrl"+i,links.get(i));
-               // Log.d("t"," \n\n SEARCH URL "+ links.get(i) + "\n\n DOMAIN URL"+ domains.get(i));
                 builder.appendQueryParameter("domainUrl"+i,domains.get(i));
             }
             String query = builder.build().getEncodedQuery();
@@ -92,9 +91,8 @@ public class QuerySearch {
                     String line;
 
                     while((line = reader.readLine())!=null){
-                        Result.add(line);   // Returns result as a string with whitspaces between url and result
+                        Result.add(line);
                     }
-                    Log.d("",Result.toString());
                     return Result;
                 }else{
                     Result.add("failed response code not ok");
@@ -112,9 +110,5 @@ public class QuerySearch {
             return Result;
         }
     }
-
-
-
-
 
 }

@@ -33,7 +33,7 @@ public class FinalResultPage extends AppCompatActivity {
 
 
         Intent intent = getIntent();
-        String text = intent.getStringExtra("map");
+        String text = intent.getStringExtra("map").substring(4);
         Result.setText(text);
 
         backButton.setOnClickListener(new View.OnClickListener() {

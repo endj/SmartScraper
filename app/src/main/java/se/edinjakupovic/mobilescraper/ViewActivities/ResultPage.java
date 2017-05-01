@@ -121,7 +121,7 @@ public class ResultPage extends AppCompatActivity {
                                 clicktex =(TextView) clicked.findViewById(R.id.row_id);
                                 if(clicktex.getMaxLines() == 1000){
                                     clicktex.setMaxLines(5);
-                                }else {
+                                }else if(clicktex.getLineCount() > 5){
                                     clicktex.setMaxLines(1000);
                                 }
                             }
@@ -133,12 +133,10 @@ public class ResultPage extends AppCompatActivity {
                             int ListPos = sumList.pointToPosition((int)x1,(int)y1);
                             int childPosition = ListPos -firstPosition;
 
-                            try{
-                                clicked = (RelativeLayout) sumList.getChildAt(childPosition); //swipe left remove
-                                urlTV = (TextView) clicked.findViewById(R.id.urlsource);
-                            }catch (Exception e){
 
-                            }
+                            clicked = (RelativeLayout) sumList.getChildAt(childPosition); //swipe left remove
+                            urlTV = (TextView) clicked.findViewById(R.id.urlsource);
+
 
                             if(clicked != null) {clicktex =(TextView) clicked.findViewById(R.id.row_id);
                                 if(clicktex.getMaxLines() == 5 && urlTV != null){
@@ -207,7 +205,7 @@ public class ResultPage extends AppCompatActivity {
             ArrayList<UrlSummaryDTO> sumResult;
             String searchTerm = strings[0];
 
-            links = UrlGet.getLinks(searchTerm);  // Returns links full url
+            links = UrlGet.getLinks(searchTerm);
             domains = UrlGet.getDomain(links);
             result = new QuerySearch().query(links,searchTerm,domains);
 
@@ -219,7 +217,7 @@ public class ResultPage extends AppCompatActivity {
         @Override
         protected void onPostExecute(ArrayList result){
             pdLoading.dismiss();
-
+            System.out.println(result.get(0).toString() + "\n"+result.size());
             listAdapter = new SummaryAdapter(ResultPage.this, sortResult(result));
             sumList.setAdapter(listAdapter);
         }
@@ -237,7 +235,7 @@ public class ResultPage extends AppCompatActivity {
      */
     void addToMap(TextView input,String DomainUrl,String Url){
         if(input != null){
-            String text = input.getText().toString(); //contains summary
+            String text = input.getText().toString();
             swipeTracker.put(DomainUrl,new RelevanceUpdateDTO(Url,DomainUrl,text,1));
         }
     }

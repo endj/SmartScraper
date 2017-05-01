@@ -1,5 +1,7 @@
 package se.edinjakupovic.mobilescraper.WebScraping;
 
+import android.util.Log;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -48,13 +50,13 @@ public class UrlRun implements Callable<ThreadScrapeResult> {
             for(Element e : ps){
                 text.append(e.text());
             }
-            result = new ThreadScrapeResult(text.toString(),this.link,this.relevance); // website text,urllink, relevance
+            result = new ThreadScrapeResult(text.toString(),this.link,this.relevance);
             result.Summarize();
             return result;
 
         }catch (Throwable e){
             System.out.println("## FAIL ##");
-            //e.printStackTrace();
+
         }
             result = new ThreadScrapeResult("searchFailed","",0);
         return result;

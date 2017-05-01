@@ -40,13 +40,12 @@ public class ThreadSearch {
 
         List<Callable<ThreadScrapeResult>> callableTasks = new ArrayList<>();
         for(int i=0, j=0; j<set.length-1; i++,j+=2){
-            callableTasks.add(new UrlRun(set[j],Double.parseDouble(set[j+1]))); // (url , relevance)
+            callableTasks.add(new UrlRun(set[j],Double.parseDouble(set[j+1])));
         }
 
-        ExecutorService executor = Executors.newFixedThreadPool(numOfTreads); // #of threads
+        ExecutorService executor = Executors.newFixedThreadPool(numOfTreads);
         try {
             List<Future<ThreadScrapeResult>> futures = executor.invokeAll(callableTasks);
-            //  System.out.println("Antal futures " +futures.size());
             for (Future futurex:futures) {
                 threadResult.add((ThreadScrapeResult) futurex.get());
             }

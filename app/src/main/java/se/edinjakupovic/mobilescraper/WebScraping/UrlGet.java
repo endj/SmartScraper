@@ -26,7 +26,7 @@ public class UrlGet {
     *   @param searchTerm Input is gotten from the search screen
     *   @return Returns the most popular links as an ArrayList
     * */
-    public static ArrayList<String> getLinks(String searchTerm){ // Goes to google, fetches top links
+    public static ArrayList<String> getLinks(String searchTerm){
         ArrayList<String> links = new ArrayList<>();
         try{
             Document doc = Jsoup.connect("https://www.google.se/search?q="+searchTerm).get();

@@ -128,7 +128,7 @@ public class ThreadScrapeResult {
 
         ScoreDTO summary = new ScoreDTO(sentences,titleWords,keywords);
         ranks = score(summary);
-        this.text = ranks.toString();
+        this.text = ranks.toString().replaceAll("[\\[\\]]", "").replaceAll(",", " ");
     }
 
     /**

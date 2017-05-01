@@ -60,7 +60,7 @@ public class UppdateRelevancys extends AsyncTask<String, Void, Void> {
         URL url;
         final int READ_TIMEOUT =5000;
         final int CONNECTION_TIMEOUT=5000;
-        final String target = "http://192.168.10.208/kandidat/updaterel.php";
+        final String target = "http://edinjakupovic.se/updaterel.php";
         
 
         try{

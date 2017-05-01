@@ -46,8 +46,8 @@ public class MainActivity extends AppCompatActivity {
             error.setText(errorMsg);
         }
 
-        final EditText input = (EditText) findViewById(R.id.input); // Fiends the search bar
-        Button htmlSearch = (Button) findViewById(R.id.htmlBtn); // Search btn
+        final EditText input = (EditText) findViewById(R.id.input);
+        Button htmlSearch = (Button) findViewById(R.id.htmlBtn);
 
 
 
