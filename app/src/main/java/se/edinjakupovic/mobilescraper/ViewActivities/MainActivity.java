@@ -4,6 +4,7 @@ package se.edinjakupovic.mobilescraper.ViewActivities;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -55,20 +56,23 @@ public class MainActivity extends AppCompatActivity {
         htmlSearch.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                if(input.getText().length() > 0){
+                if( validSearch(input.getText()) ){
                     String siteUrl = input.getText().toString();
-                    Log.d("siteurl",siteUrl);
-
                     doSearch(siteUrl);
-
                 }
-
-
             }
         });
 
 
     }
+
+    private boolean validSearch(Editable text) {
+        String input = String.valueOf(text);
+        return !input.trim().isEmpty();
+    }
+
+
+
 
     /**
     * Changes intent to the ResultPage and passes
